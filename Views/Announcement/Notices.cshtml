@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Announcements>
+
+@{
+    ViewData["Title"] = "Company Notices";
+    ViewData["BodyClass"] = "leave-page";
+}
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Announcement</li>
+            </ol>
+        </nav>
+
+        <!-- Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">Company Notices</h3>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="mb-4 d-flex gap-2 flex-wrap">
+            <form method="get" asp-action="Notices">
+                <button type="submit" name="category" value="all" class="btn btn-outline-secondary @((ViewData["SelectedCategory"] as string) == "All" ? "active" : "")">All</button>
+                <button type="submit" name="category" value="holidays" class="btn btn-outline-secondary @((ViewData["SelectedCategory"] as string) == "Holidays" ? "active" : "")">Holidays</button>
+                <button type="submit" name="category" value="payroll" class="btn btn-outline-secondary @((ViewData["SelectedCategory"] as string) == "Payroll" ? "active" : "")">Payroll</button>
+                <button type="submit" name="category" value="policy" class="btn btn-outline-secondary @((ViewData["SelectedCategory"] as string) == "Policy" ? "active" : "")">Policy</button>
+            </form>
+        </div>
+
+        <!-- Notices Table -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="noticesTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Title</th>
+                                <th>Date Posted</th>
+                                <th>Description</th>
+                                <th style="width: 90px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var notice in Model)
+                                {
+                                    <tr>
+                                        <td>@notice.Title</td>
+                                        <td>@notice.DatePosted.ToString("MM/dd/yyyy")</td>
+                                        <td class="text-truncate" style="max-width: 250px;">@notice.Message</td>
+                                        <td>
+                                            <a class="icon-action-btn view"
+                                               asp-action="Details"
+                                               asp-route-id="@notice.AnnouncementID"
+                                               title="View Details">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">No company notices available at this time.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <form method="get" asp-action="Notices" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="category" value="@ViewData["SelectedCategory"]" />
+                    <label for="pageInput">Page:</label>
+                    <input type="number"
+                           name="page"
+                           id="pageInput"
+                           min="1"
+                           max="@ViewBag.TotalPages"
+                           value="@ViewBag.CurrentPage"
+                           class="form-control"
+                           style="width: 80px;"
+                           onchange="this.form.submit()" />
+                    <span>of @ViewBag.TotalPages</span>
+                </form>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Notices"
+                       asp-route-page="@(ViewBag.CurrentPage - 1)"
+                       asp-route-category="@ViewData["SelectedCategory"]"
+                       class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                        ‹ Prev
+                    </a>
+
+                    <a asp-action="Notices"
+                       asp-route-page="@(ViewBag.CurrentPage + 1)"
+                       asp-route-category="@ViewData["SelectedCategory"]"
+                       class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                        Next ›
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+
+<div class="modal fade" id="viewNoticeModal" tabindex="-1" aria-labelledby="viewNoticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-sm rounded-3">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="viewNoticeModalLabel">Notice Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Title -->
+                <h5 id="modalTitle" class="fw-bold mb-2"></h5>
+
+                <!-- Category -->
+                <p class="mb-2"><strong>Category:</strong> <span id="modalCategory"></span></p>
+
+                <!-- Date Posted -->
+                <p class="mb-2"><strong>Date Posted:</strong> <span id="modalPosted"></span></p>
+
+                <!-- Expiry Date -->
+                <p class="mb-2"><strong>Expiry Date:</strong> <span id="modalExpiry"></span></p>
+
+                <hr />
+
+                <!-- Message -->
+                <p id="modalMessage" class="text-justify"></p>
+            </div>
+        </div>
+    </div>
+</div>

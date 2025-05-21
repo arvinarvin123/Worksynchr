@@ -1,0 +1,285 @@
+﻿@using System.Linq
+@model HRPayrollSystem.ViewModels.DashboardViewModel
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid">
+
+        <!-- Header Greeting & Punch In/Out -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 bg-white rounded shadow-sm p-4">
+            <div>
+                <h2 class="fw-bold mb-1">Dashboard</h2>
+                @{
+                    var username = Context.Session.GetString("Username");
+                    var shiftStart = new TimeSpan(8, 0, 0); // 08:00 AM
+                    var now = DateTime.Now.TimeOfDay;
+                    var timeDiff = shiftStart - now;
+
+                    string timeMessage;
+
+                    var hours = Math.Abs((int)timeDiff.TotalHours);
+                    var minutes = Math.Abs(timeDiff.Minutes);
+
+                    if (timeDiff.TotalMinutes > 0)
+                    {
+                        timeMessage = $"You came {hours} hour(s) and {minutes} minute(s) early today.";
+                    }
+                    else if (timeDiff.TotalMinutes < 0)
+                    {
+                        timeMessage = $"You came {hours} hour(s) and {minutes} minute(s) late today.";
+                    }
+                    else
+                    {
+                        timeMessage = "You came exactly on time!";
+                    }
+                }
+                <p class="text-muted mb-0">
+                    Good to see you, <strong>@username</strong> 😊<br>
+                    @timeMessage
+                </p>
+
+
+
+            </div>
+            <div class="mt-3 mt-md-0 d-flex gap-2">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <input type="hidden" id="employeeId" value="@Context.Session.GetInt32("EmployeeID")" />
+                <input type="hidden" id="checkOutTime" value="@Model?.CheckOutTime?.ToString(@"hh\:mm\:ss")" />
+
+
+
+
+
+
+                <form method="post" asp-controller="Attendance" asp-action="PunchIn" id="punchInForm">
+                    <input type="hidden" name="latitude" id="latitude" />
+                    <input type="hidden" name="longitude" id="longitude" />
+
+                    <button id="btn-punchin" type="submit" class="btn btn-outline-successs">
+                        <i class="bi bi-box-arrow-in-left me-1"></i>
+                        <span id="punchInTime">@DateTime.Now.ToString("HH:mm:ss")</span> Punch In
+                    </button>
+                </form>
+
+             
+
+
+                <form method="post" asp-controller="Attendance" asp-action="PunchOut">
+                    <button type="submit" class="btn btn-outline-dangerr">
+                        <i class="bi bi-box-arrow-right me-1"></i>
+                        <span id="punchOutTime">@DateTime.Now.ToString("HH:mm:ss")</span> Punch Out
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 my-4">
+            <!-- Leave Card -->
+            <div class="col-md-3">
+                <div class="card dashboard-card dashboard-card-leave h-100">
+                    <div class="card-body">
+                        <div class="dashboard-card-icon bg-primary text-white">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <h6 class="text-muted mb-3">Leave Status</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Balance:</span>
+                            <strong>@Model.LeaveBalance days</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Taken:</span>
+                            <strong>@Model.TotalLeaveTaken days</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Pending:</span>
+                            <strong>@Model.PendingLeaveRequests requests</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payroll Card -->
+            <div class="col-md-3">
+                <div class="card dashboard-card dashboard-card-payroll h-100">
+                    <div class="card-body">
+                        <div class="dashboard-card-icon bg-success text-white">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <h6 class="text-muted mb-3">Payroll Info</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Current Salary:</span>
+                            <strong>₱@Model.CurrentSalary.ToString("N2")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Last Payroll:</span>
+                            <strong>₱@Model.LastPayrollAmount.ToString("N2")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Next Payroll:</span>
+                            <strong>@Model.DaysUntilNextPayroll days</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Card -->
+            <div class="col-md-3">
+                <div class="card dashboard-card dashboard-card-attendance h-100">
+                    <div class="card-body">
+                        <div class="dashboard-card-icon bg-warning text-dark">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <h6 class="text-muted mb-3">Attendance</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Present:</span>
+                            <strong>@Model.PresentDaysThisMonth days</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Absent:</span>
+                            <strong>@Model.AbsentDaysThisMonth days</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Late:</span>
+                            <strong>@Model.LateDaysThisMonth days</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overtime Card -->
+            <div class="col-md-3">
+                <div class="card dashboard-card dashboard-card-overtime h-100">
+                    <div class="card-body">
+                        <div class="dashboard-card-icon bg-purple text-white">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h6 class="text-muted mb-3">Overtime</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>This Month:</span>
+                            <strong>@Model.OvertimeHours.ToString("N1") hrs</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Today:</span>
+                            <strong>@(Model.WorkedHours?.TotalHours > 8 ? ((decimal)(Model.WorkedHours?.TotalHours - 8)).ToString("N1") : "0") hrs</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Rate:</span>
+                            <strong>1.25x</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Log Summary -->
+        <div class="card mt-4 shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-4">⏱ Time Log Overview</h5>
+                <div class="row text-center mb-4">
+                    <div class="col-md-4">
+                        <p class="mb-1 fw-semibold fs-4">@Model.ScheduledHours.ToString(@"hh\:mm")</p>
+                        <small class="text-muted">Scheduled</small>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-1 fw-semibold fs-4">@(Model.BalanceHours?.ToString(@"hh\:mm") ?? "--:--")</p>
+                        <small class="text-muted">Balance</small>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-1 fw-semibold fs-4">@(Model.WorkedHours?.ToString(@"hh\:mm") ?? "--:--")</p>
+                        <small class="text-muted">Worked</small>
+                    </div>
+                </div>
+
+                <h6 class="mb-3 text-muted">📅 This Month</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1">Total: <strong>@Model.TotalHours.ToString("N1") hours</strong></p>
+                        <p class="mb-1">Shortage Time: <strong>@Model.ShortageHours.ToString("N1") hours</strong></p>
+                        <p class="mb-1">Over Time: <strong>@Model.OvertimeHours.ToString("N1") hours</strong></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1">Worked Time: <strong>@Model.WorkedTimeHours.ToString("N1") hours</strong></p>
+                        <div class="progress my-2">
+                            <div class="progress-bar bg-primary" role="progressbar" 
+                                 style="width: @((Model.WorkedTimeHours / Model.TotalHours * 100).ToString("N0"))%;" 
+                                 aria-valuenow="@Model.WorkedTimeHours" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalHours"></div>
+                        </div>
+                        <div class="progress my-2">
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: @((Model.ShortageHours / Model.TotalHours * 100).ToString("N0"))%;" 
+                                 aria-valuenow="@Model.ShortageHours" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalHours"></div>
+                        </div>
+                        <div class="progress my-2">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: @((Model.OvertimeHours / Model.TotalHours * 100).ToString("N0"))%;" 
+                                 aria-valuenow="@Model.OvertimeHours" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalHours"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements -->
+        <div class="card mt-4 shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-4">📢 Announcements</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Title</th>
+                                <th>Posted Date</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.Announcements != null && Model.Announcements.Any())
+                            {
+                                @foreach (var announcement in Model.Announcements)
+                                {
+                                    <tr>
+                                        <td>@announcement.Title</td>
+                                        <td>@announcement.DatePosted.ToString("MMM d, yyyy")</td>
+                                        <td class="text-truncate" style="max-width: 250px;">@announcement.Message</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center">No announcements available</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    mapboxgl.accessToken = '@ViewBag.MapboxToken';
+</script>
+

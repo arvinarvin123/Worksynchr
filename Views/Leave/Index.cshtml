@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Leave Requests";
+    ViewData["BodyClass"] = "leave-page";
+}
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Leave</li>
+            </ol>
+        </nav>
+
+        <!-- Title + Action -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">Manage Leaves</h3>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="get" asp-action="Index" class="mb-4">
+                    <!-- Filter Tabs -->
+                    <div class="mb-4 d-flex flex-wrap gap-2">
+                        @foreach (var tab in new[] { "All", "Pending", "Approved", "Rejected" })
+                        {
+                            <button type="submit"
+                                    name="status"
+                                    value="@tab"
+                                    class="btn btn-outline-secondary @(ViewBag.Status == tab || (string.IsNullOrEmpty(ViewBag.Status) && tab == "All") ? "active" : "")">
+                                @tab
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Leave Type, Search, Date -->
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <input type="text"
+                                   class="form-control"
+                                   name="search"
+                                   value="@ViewBag.Search"
+                                   placeholder="🔍 Search employee..."
+                                   onchange="this.form.submit()" />
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <input type="date"
+                                   class="form-control"
+                                   name="date"
+                                   value="@ViewBag.Date"
+                                   onchange="this.form.submit()" />
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Leave Request Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Employee</th>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var leave in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://randomuser.me/api/portraits/lego/1.jpg" class="rounded-circle me-2" width="36" height="36">
+                                            <span>@leave.Employee?.FirstName @leave.Employee?.LastName</span>
+                                        </div>
+                                    </td>
+                                    <td>@leave.LeaveType</td>
+                                    <td>@leave.StartDate.ToString("MM/dd/yyyy")</td>
+                                    <td>@leave.EndDate.ToString("MM/dd/yyyy")</td>
+                                    <td>
+                                        <span class="badge @(leave.ApprovalStatus switch {
+                                            "Approved" => "bg-success",
+                                            "Rejected" => "bg-danger",
+                                            "Pending" => "bg-warning",
+                                            _ => "bg-secondary"
+                                        })">
+                                            @leave.ApprovalStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <form method="post" asp-action="Approve" asp-route-leaveId="@leave.LeaveID">
+                                                <button type="submit" class="icon-action-btn approve" title="Approve" onclick="return confirm('Are you sure you want to approve this leave request?');">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            <form method="post" asp-action="Reject" asp-route-leaveId="@leave.LeaveID">
+                                                <button type="submit" class="icon-action-btn reject" title="Reject" onclick="return confirm('Are you sure you want to reject this leave request?');">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                            <a href="@Url.Action("ViewLeave", "Leave", new { leaveId = leave.LeaveID })" class="icon-action-btn view" title="View Details">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+                    <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                        <label for="pageInput" class="mb-0">Page:</label>
+                        <input type="number"
+                               name="page"
+                               id="pageInput"
+                               min="1"
+                               max="@ViewBag.TotalPages"
+                               value="@ViewBag.CurrentPage"
+                               class="form-control"
+                               style="width: 80px;"
+                               onchange="this.form.submit()" />
+                        <span>of @ViewBag.TotalPages</span>
+                    </form>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                            ‹ Prev
+                        </a>
+
+                        <a asp-action="Index"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                            Next ›
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

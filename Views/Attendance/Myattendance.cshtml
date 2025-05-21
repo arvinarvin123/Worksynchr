@@ -1,0 +1,175 @@
+﻿@model IEnumerable<HRPayrollSystem.Models.Attendance>
+
+
+@{
+    ViewData["Title"] = "My Attendance";
+    ViewData["BodyClass"] = "leave-page";
+}
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Attendance")">Attendance</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Attendance</li>
+            </ol>
+        </nav>
+
+        <!-- Title and Button -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+            <h3 class="fw-bold mb-0">My Attendance</h3>
+            <a href="@Url.Action("ViewOffice", "Attendance")" class="btn btn-dark">
+                <i class="bi bi-geo-alt me-1"></i>View Offices
+            </a>
+        </div>
+
+        <!-- Card Container -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <!-- Combined Filters -->
+                <form method="get" class="mb-4">
+                    <div class="row g-3">
+                        <!-- Date Range -->
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <label class="form-label">Date Range</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="date" class="form-control" id="startDate" name="startDate" value="@ViewBag.StartDate" />
+                                </div>
+                                <div class="col-6">
+                                    <input type="date" class="form-control" id="endDate" name="endDate" value="@ViewBag.EndDate" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" id="status" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="Present" selected="@(ViewBag.SelectedStatus == "Present")">Present</option>
+                                <option value="Late" selected="@(ViewBag.SelectedStatus == "Late")">Late</option>
+                                <option value="Absent" selected="@(ViewBag.SelectedStatus == "Absent")">Absent</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Button -->
+                        <div class="col-12 col-md-6 col-lg-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100"> <i class="fas fa-filter me-2"></i>Filter
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Attendance Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Hours Worked</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var attendance in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @(attendance.Date != null
+                                            ? attendance.Date.Value.ToString("yyyy-MM-dd")
+                                            : "—")
+                                    </td>
+                                    <td>
+                                        @(attendance.CheckInTime.HasValue
+                                            ? DateTime.Today.Add(attendance.CheckInTime.Value).ToString("hh:mm tt")
+                                            : "—")
+                                    </td>
+                                    <td>
+                                        @(
+                                            attendance.CheckOutTime.HasValue && attendance.CheckOutTime.Value != TimeSpan.Zero
+                                            ? DateTime.Today.Add(attendance.CheckOutTime.Value).ToString("hh:mm tt")
+                                            : "--:--:--"
+                                            )
+                                    </td>
+                                    <td>
+                                        @{
+                                            if (attendance.TotalHoursWorked.HasValue)
+                                            {
+                                                var totalMinutes = (int)(attendance.TotalHoursWorked.Value * 60);
+                                                var hours = totalMinutes / 60;
+                                                var minutes = totalMinutes % 60;
+                                                <text>@($"{hours}h {minutes}m")</text>
+                                                ;
+                                            }
+                                            else
+                                            {
+                                                <text>—</text>
+                                                ;
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @(attendance.AttendanceStatus switch {
+                                            "Present" => "bg-success",
+                                            "Late" => "bg-warning text-dark",
+                                            "Absent" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        })">
+                                            @attendance.AttendanceStatus
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+                    <form method="get" asp-action="Myattendance" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="startDate" value="@ViewBag.StartDate" />
+                        <input type="hidden" name="endDate" value="@ViewBag.EndDate" />
+                        <input type="hidden" name="status" value="@ViewBag.SelectedStatus" />
+
+                        <label for="pageInput" class="mb-0">Page:</label>
+                        <input type="number"
+                               name="page"
+                               id="pageInput"
+                               min="1"
+                               max="@ViewBag.TotalPages"
+                               value="@ViewBag.CurrentPage"
+                               class="form-control"
+                               style="width: 80px;"
+                               onchange="this.form.submit()" />
+                        <span>of @ViewBag.TotalPages</span>
+                    </form>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Myattendance"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-startDate="@ViewBag.StartDate"
+                           asp-route-endDate="@ViewBag.EndDate"
+                           asp-route-status="@ViewBag.SelectedStatus"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                            ‹ Prev
+                        </a>
+
+                        <a asp-action="Myattendance"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-startDate="@ViewBag.StartDate"
+                           asp-route-endDate="@ViewBag.EndDate"
+                           asp-route-status="@ViewBag.SelectedStatus"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                            Next ›
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

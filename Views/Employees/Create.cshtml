@@ -1,0 +1,179 @@
+﻿@model HRPayrollSystem.Models.Employee
+
+
+@{
+    ViewData["Title"] = "Add Employee";
+    ViewData["BodyClass"] = "employee-page";
+}
+<main class="p-4 flex-grow-1 bg-light">
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Employees")">Employees</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Employee</li>
+        </ol>
+    </nav>
+
+    <div class="employee-card">
+        <div class="card-body">
+            <h3 class="fw-bold mb-4">Add Employee</h3>
+
+            <!-- Display Success or Error Message -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+
+            <form asp-controller="Employees" asp-action="Create" method="post" novalidate>
+
+
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <!-- First Name -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="Enter first name" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed">
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Enter last name" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed">
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Email -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Enter email" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input asp-for="ContactNumber" class="form-control" placeholder="Enter phone number" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed">
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Gender -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Gender</label>
+                        <select asp-for="Gender" class="form-select" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Address</label>
+                        <input asp-for="Address" class="form-control" placeholder="Enter address" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags and potentially dangerous HTML are not allowed">
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Birth Date -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Birth Date</label>
+                        <input asp-for="BirthDate" type="date" class="form-control" required>
+                        <span asp-validation-for="BirthDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Department -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Department</label>
+                        <select asp-for="DepartmentID" class="form-select" required>
+                            <option value="">Select Department</option>
+                            @foreach (var department in ViewBag.Departments)
+                            {
+                                <option value="@department.DepartmentID">@department.DepartmentName</option>
+                            }
+
+                        </select>
+                        <span asp-validation-for="DepartmentID" class="text-danger"></span>
+                    </div>
+
+                    <!-- Position -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Position</label>
+                        <select asp-for="PositionID" class="form-select" required>
+                            <option value="">Select Position</option>
+                            @foreach (var position in ViewBag.Positions)
+                            {
+                                <option value="@position.PositionID">@position.PositionTitle</option>
+                            }
+                        </select>
+                        <span asp-validation-for="PositionID" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Salary -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Salary</label>
+                        <select asp-for="SalaryGradeID" class="form-select" required>
+                            <option value="">Select Salary Grade</option>
+                            @foreach (var salary in ViewBag.SalaryGrades)
+                            {
+                                <option value="@salary.SalaryGradeID">@salary.BasicSalary</option>
+                            }
+                        </select>
+                        <span asp-validation-for="SalaryGradeID" class="text-danger"></span>
+                    </div>
+                    <!-- Hire Date -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Hire Date</label>
+                        <input asp-for="HireDate" type="date" class="form-control" required>
+                        <span asp-validation-for="HireDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <a href="@Url.Action("Index", "Employees")" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to add this employee?');">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</main>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,95 @@
+﻿@model IEnumerable<Position>
+
+@{
+    ViewData["Title"] = "Positions";
+    ViewData["BodyClass"] = "leave-page"; // Uses shared styles
+}
+<main class="p-4 flex-grow-1 bg-light">
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Positions</li>
+        </ol>
+    </nav>
+
+    <!-- Title and Action Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-semibold">Positions</h3>
+        <a asp-action="AddPosition" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Position
+        </a>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Card Container -->
+    <div class="leave-card">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr class="fs-6">
+                    <th scope="col" class="fw-semibold">ID</th>
+                    <th scope="col" class="fw-semibold">Title</th>
+                    <th scope="col" class="fw-semibold">Job Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pos in Model)
+                {
+                    <tr>
+                        <td class="text-muted">@pos.PositionID</td>
+                        <td class="fw-medium">@pos.PositionTitle</td>
+                        <td class="text-muted">@pos.JobDescription</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Pagination Placeholder -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <form method="get" asp-action="Position" class="d-flex align-items-center gap-2">
+                    <label for="pageInput">Page:</label>
+                    <input type="number"
+                           name="page"
+                           id="pageInput"
+                           min="1"
+                           max="@ViewBag.TotalPages"
+                           value="@ViewBag.CurrentPage"
+                           class="form-control"
+                           style="width: 80px;"
+                           onchange="this.form.submit()" />
+                    <span>of @ViewBag.TotalPages</span>
+                </form>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Position" asp-route-page="@(ViewBag.CurrentPage - 1)"
+                       class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                        ‹ Prev
+                    </a>
+
+                    <a asp-action="Position" asp-route-page="@(ViewBag.CurrentPage + 1)"
+                       class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                        Next ›
+                    </a>
+                </div>
+            </div>
+
+    </div>
+</div>
+</main>

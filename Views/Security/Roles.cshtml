@@ -1,0 +1,198 @@
+﻿@model List<User>
+
+@{
+    ViewData["Title"] = "User Roles & Permissions";
+    ViewData["BodyClass"] = "user-roles";
+}
+<main class="p-4 flex-grow-1 bg-light">
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Security")">Security & Settings</a></li>
+            <li class="breadcrumb-item active" aria-current="page">User Roles</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-semibold">User Roles & Permissions</h3>
+        <div>
+            <button class="btn-main" data-bs-toggle="modal" data-bs-target="#addRoleModal">+ Add Role</button>
+        </div>
+    </div>
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+
+    <!-- Card -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-borderless align-middle">
+                <thead>
+                    <tr class="text-muted">
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Access Level</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://randomuser.me/api/portraits/lego/1.jpg" class="avatar" />
+                                    @user.Username
+                                </div>
+                            </td>
+                            <td>@user.Role</td>
+                            <td>@(user.Role == "Admin" ? "Full Access" : "Restricted")</td>
+                            <td class="text-end">
+                                <div class="d-inline">
+                                    <button class="icon-action-btn edit" data-bs-toggle="modal" data-bs-target="#editRoleModal-@user.UserID" title="Edit Role">
+                                        <i class="fas fa-user-edit"></i>
+                                    </button>
+                                </div>
+
+                                <div class="d-inline">
+                                    <form method="post" asp-action="ResetPassword" asp-controller="Security" asp-route-userId="@user.UserID" class="d-inline">
+                                        <button class="icon-action-btn view" type="submit" title="Reset Password" onclick="return confirm('Are you sure you want to reset the password to default (123)?');">
+                                            <i class="fas fa-key"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="d-inline">
+                                    <form method="post" asp-action="ToggleTwoFactor" asp-controller="Security" asp-route-userId="@user.UserID" style="display:inline-block; margin-left: 0.5rem;">
+                                        <input type="hidden" name="enable" value="@(user.TwoFactorEnabled.GetValueOrDefault() ? "False" : "True")" />
+                                        <button type="submit" class="action-btn">
+                                            @(user.TwoFactorEnabled.GetValueOrDefault() ? "Disable" : "Enable")
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        <!-- Edit Role Modal -->
+                        <div class="modal fade" id="editRoleModal-@user.UserID" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content p-4">
+                                    <h5>Edit Role for @user.Username</h5>
+                                    <form asp-action="UpdateRole" method="post">
+                                        <input type="hidden" name="userId" value="@user.UserID" />
+                                        <div class="mb-3">
+                                            <label for="newRole" class="form-label">New Role</label>
+                                            <select class="form-select" name="newRole">
+                                                <option value="Admin" selected="@("Admin" == user.Role)">Admin</option>
+                                                <option value="HR" selected="@("HR" == user.Role)">HR</option>
+                                                <option value="PayrollStaff" selected="@("PayrollStaff" == user.Role)">Payroll Staff</option>
+                                                <option value="Employee" selected="@("Employee" == user.Role)">Employee</option>
+                                            </select>
+                                        </div>
+                                        <div class="text-end">
+                                            <button type="submit" class="btn-main">Update</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Placeholder -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <form method="get" asp-action="Roles" class="d-flex align-items-center gap-2">
+                    <label for="pageInput">Page:</label>
+                    <input type="number"
+                           name="page"
+                           id="pageInput"
+                           min="1"
+                           max="@ViewBag.TotalPages"
+                           value="@ViewBag.CurrentPage"
+                           class="form-control"
+                           style="width: 80px;"
+                           onchange="this.form.submit()" />
+                    <span>of @ViewBag.TotalPages</span>
+                </form>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="Roles" asp-route-page="@(ViewBag.CurrentPage - 1)"
+                       class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                        ‹ Prev
+                    </a>
+
+                    <a asp-action="Roles" asp-route-page="@(ViewBag.CurrentPage + 1)"
+                       class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                        Next ›
+                    </a>
+                </div>
+            </div>
+
+    </div>
+</div>
+
+<!-- Add Role Modal -->
+<div class="modal fade" id="addRoleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content p-4">
+            <h5>Add New User Role</h5>
+            <form asp-action="CreateUser" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label>Username</label>
+                        <input name="username" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label>Employee</label>
+                        <select name="employeeId" class="form-select" required>
+                            @foreach (var emp in ViewBag.Employees as List<Employee>)
+                            {
+                                <option value="@emp.EmployeeID">@emp.FirstName @emp.LastName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Role</label>
+                        <select name="role" class="form-select">
+                            <option value="Admin">Admin</option>
+                            <option value="HR">HR</option>
+                            <option value="PayrollStaff">Payroll Staff</option>
+                            <option value="Employee">Employee</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Status</label>
+                        <select name="status" class="form-select">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end mt-3">
+                        <button type="submit" class="btn-main">Create User</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</main>

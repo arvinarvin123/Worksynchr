@@ -1,0 +1,89 @@
+﻿@model HRPayrollSystem.Models.Employee
+@{
+    ViewData["Title"] = "Edit Employee";
+    ViewData["BodyClass"] = "leave-page"; // Reuse leave-page styling
+}
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Employees")">Employees</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Employee</li>
+            </ol>
+        </nav>
+
+        <!-- Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">Edit Employee</h3>
+        </div>
+
+        <div class="leave-card">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
+            <form asp-action="Edit" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="EmployeeID" />
+
+                <div class="col-md-6">
+                    <label asp-for="FirstName" class="form-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="LastName" class="form-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ContactNumber" class="form-label">Phone Number</label>
+                    <input asp-for="ContactNumber" class="form-control" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed" />
+                    <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="DepartmentID" class="form-label">Department</label>
+                    <select asp-for="DepartmentID" asp-items="ViewBag.Departments" class="form-select">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentID" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="PositionID" class="form-label">Position</label>
+                    <select asp-for="PositionID" asp-items="ViewBag.Positions" class="form-select">
+                        <option value="">-- Select Position --</option>
+                    </select>
+                    <span asp-validation-for="PositionID" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="SalaryGradeID" class="form-label">Salary Grade</label>
+                    <select asp-for="SalaryGradeID" asp-items="ViewBag.SalaryGrades" class="form-select">
+                        <option value="">-- Select Salary Grade --</option>
+                    </select>
+                    <span asp-validation-for="SalaryGradeID" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to save changes to this employee?');">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+

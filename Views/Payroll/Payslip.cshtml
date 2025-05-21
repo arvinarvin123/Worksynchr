@@ -1,0 +1,251 @@
+﻿@model HRPayrollSystem.ViewModels.PayrollViewModel
+@{
+    ViewData["Title"] = "Payroll Computation";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb;
+        color: #111827;
+    }
+
+    .breadcrumb {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 1.25rem;
+    }
+
+        .breadcrumb a {
+            text-decoration: none;
+            color: #6b7280;
+        }
+
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+    .form-wrapper {
+        max-width: 1000px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 1rem;
+        padding: 2rem 2.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.75rem;
+        color: #1f2937;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        color: #4b5563;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        padding: 0.6rem 0.8rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    input[readonly] {
+        background-color: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        border: none;
+        transition: 0.3s ease;
+    }
+
+  
+
+   
+
+    .btn-secondary {
+        background-color: #e5e7eb;
+        color: #1f2937;
+    }
+
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+
+    .computed-section {
+        background-color: #f9fafb;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px dashed #d1d5db;
+    }
+
+        .computed-section strong {
+            color: #111827;
+        }
+</style>
+
+<main class="p-4 flex-grow-1 bg-light">
+<div class="container-fluid px-4 py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Payroll")">Payroll</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Payslip</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">Payslip Computation Form</h3>
+        </div>
+
+  
+    
+    <div class="form-wrapper">
+
+
+        <h2>🧮 Payroll Computation Form</h2>
+
+		    <!-- Basic Employee Info -->
+            <div class="section-title">Employee Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Employee Name</label>
+                    <input type="text" value="@Model.EmployeeName" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Basic Salary</label>
+                    <input type="text" value="₱@Model.BasicSalary?.ToString("N2")" readonly />
+                </div>
+            </div>
+
+            <!-- Earnings -->
+            <div class="section-title">Earnings</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Overtime Hours</label>
+                    <input type="text" value="@Model.OvertimeHours" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Overtime Rate</label>
+                    <input type="text" value="@Model.OvertimeRate" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Total Allowances (e.g. 3000)</label>
+                    <input type="text" value="₱@Model.Allowances?.ToString("N2")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Overtime Pay</label>
+                    <input type="text" value="₱@Model.OvertimePay?.ToString("N2")" readonly />
+                </div>
+            </div>
+
+            <div class="computed-section">
+                    <strong> Gross Pay = Basic Salary + Overtime Pay + Allowances</strong><br />
+                Process: <strong>₱@Model.GrossSalary?.ToString("N2")</strong> = @Model.BasicSalary?.ToString("N2") + @Model.OvertimePay?.ToString("N2") + @Model.Allowances?.ToString("N2")
+                </div>
+
+            <!-- Deductions -->
+            <div class="section-title">Deductions</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>SSS</label>
+                    <input type="text" value="₱@Model.Deductions_SSS?.ToString("N2")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>PhilHealth</label>
+                    <input type="text" value="₱@Model.Deductions_PhilHealth?.ToString("N2")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Pag-IBIG</label>
+                    <input type="text" value="₱@Model.Deductions_PagIbig?.ToString("N2")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Absences Deduction</label>
+                    <input type="text" value="₱@Model.AbsenceDeduction?.ToString("N2")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Withholding Tax</label>
+                    <input type="text" value="₱@Model.WithholdingTax?.ToString("N2")" readonly />
+                </div>
+            </div>
+
+            <div class="computed-section">
+                    <strong> Total Deduction = SSS + PhilHealth + Pag-IBIG + Absences + Tax </strong><br />
+                Process: <strong>₱@Model.TotalDeductions?.ToString("N2")</strong> = ₱@Model.Deductions_SSS?.ToString("N2") + ₱@Model.Deductions_PhilHealth?.ToString("N2") + ₱@Model.Deductions_PagIbig?.ToString("N2") + ₱@Model.AbsenceDeduction?.ToString("N2") + @Model.WithholdingTax?.ToString("N2")
+                </div>
+
+            <!-- Net Pay -->
+            <div class="section-title">Net Salary</div>
+            <div class="form-group">
+                <label>Net Salary (Auto-Computed)</label>
+                <input type="text" value="₱@Model.NetSalary?.ToString("N2")" readonly />
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-row">
+                <a href="@Url.Action("DownloadPayslip", "Payroll", new { id = Model.PayrollId })" class="btn btn-secondary">
+                    <i class="fas fa-file-pdf me-2"></i>Download
+                </a>
+                <a href="@Url.Action("SendEmail", "Payroll", new { id = Model.PayrollId })" class="btn btn-primary">
+                    <i class="fas fa-envelope me-2"></i>Send
+                </a>
+            </div>
+
+
+
+    </div>
+
+ 
+</div>
+
+
+</main>

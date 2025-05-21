@@ -1,0 +1,173 @@
+﻿@model IEnumerable<HRPayrollSystem.Models.Payroll>
+
+@{
+    ViewData["Title"] = "My Payroll";
+    ViewData["BodyClass"] = "leave-page";
+}
+<main class="p-4 flex-grow-1 bg-light">
+
+    <div class="container-fluid px-4 py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Payroll")">Payroll</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Payroll</li>
+            </ol>
+        </nav>
+
+        <!-- Title + Action -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">My Payroll</h3>
+        </div>
+
+
+        <div class="card">
+            <!-- Table -->
+            <div class="table-responsive">
+                <!-- Filter -->
+                <form method="get" asp-action="MyPayroll" class="d-flex gap-2 mb-3">
+                    <select name="monthFilter" class="form-select w-auto" onchange="this.form.submit()">
+                        <option value="">All Months</option>
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            <option value="@m" selected="@(ViewBag.CurrentMonth == m)">
+                                @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                            </option>
+                        }
+                    </select>
+                    <select name="yearFilter" class="form-select w-auto" onchange="this.form.submit()">
+                        <option value="">All Years</option>
+                        @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 2; y--)
+                        {
+                            <option value="@y" selected="@(ViewBag.CurrentYear == y)">@y</option>
+                        }
+                    </select>
+                </form>
+
+                <!-- Payroll Table -->
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th class="text-right">Basic Salary</th>
+                                <th class="text-right">Allowances</th>
+                                <th class="text-right">Deductions</th>
+                                <th class="text-right">Net Salary</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    var basicSalary = item.SalaryGrade?.BasicSalary ?? 0;
+                                    var allowances = item.SalaryGrade?.Allowances ?? 0;
+                                    var totalDeductions = (item.Deductions_SSS ?? 0) + (item.Deductions_PhilHealth ?? 0) +
+                                    (item.Deductions_PagIbig ?? 0) + (item.Absences ?? 0) + (item.TaxWithHolding ?? 0);
+
+                                <tr>
+                                    <td>
+                                        @{
+                                            var payPeriod = item.PayPeriod;
+                                            string half = "";
+                                            if (payPeriod.HasValue)
+                                            {
+                                                if (payPeriod.Value.Day <= 15)
+                                                {
+                                                    half = payPeriod.Value.ToString("MMMM") + "(1st Half)" ;
+                                                }
+                                                else
+                                                {
+                                                    half = payPeriod.Value.ToString("MMMM") + "(2nd Half)" ;
+                                                }
+                                            }
+                                        }
+                                        @half
+                                    </td>
+                                    <td>@item.PayPeriod?.Year</td>
+                                    <td class="text-right">₱@String.Format("{0:N2}", basicSalary)</td>
+                                    <td class="text-right">₱@String.Format("{0:N2}", allowances)</td>
+                                    <td class="text-right">₱@String.Format("{0:N2}", totalDeductions)</td>
+                                    <td class="text-right">₱@String.Format("{0:N2}", item.NetSalary)</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a href="@Url.Action("Payslip", "Payroll", new { id = item.PayrollID })" class="icon-action-btn view" title="View Payslip">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                     
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Payslip Modal -->
+                <div class="modal fade" id="payslipModal" tabindex="-1" aria-labelledby="payslipModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Payslip - March 2025</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Basic Salary:</strong> ₱25,000</p>
+                                <p><strong>Allowances:</strong> ₱2,000</p>
+                                <p><strong>Deductions:</strong> ₱1,000</p>
+                                <p><strong>Net Salary:</strong> ₱26,000</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-outline-success">Download PDF</button>
+                                <button class="btn btn-outline-warning">Request Correction</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <form method="get" asp-action="MyPayroll" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="monthFilter" value="@ViewBag.CurrentMonth" />
+                        <input type="hidden" name="yearFilter" value="@ViewBag.CurrentYear" />
+
+                        <label for="pageInput">Page:</label>
+                        <input type="number"
+                               name="page"
+                               id="pageInput"
+                               min="1"
+                               max="@ViewBag.TotalPages"
+                               value="@ViewBag.CurrentPage"
+                               class="form-control"
+                               style="width: 80px;"
+                               onchange="this.form.submit()" />
+                        <span>of @ViewBag.TotalPages</span>
+                    </form>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="MyPayroll"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           asp-route-monthFilter="@ViewBag.CurrentMonth"
+                           asp-route-yearFilter="@ViewBag.CurrentYear"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                            ‹ Prev
+                        </a>
+
+                        <a asp-action="MyPayroll"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           asp-route-monthFilter="@ViewBag.CurrentMonth"
+                           asp-route-yearFilter="@ViewBag.CurrentYear"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                            Next ›
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>

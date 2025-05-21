@@ -1,0 +1,191 @@
+﻿<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
+    <div class="d-flex align-items-center">
+        <a class="navbar-brand fw-bold" href="/">
+            <img src="@Url.Content("~/images/logohr1.png")" alt="Logo" width="75" height="40" class="d-inline-block align-text-top">
+            <span class="d-none d-md-inline">WorkSync: HR & Payroll Transactions</span>
+        </a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="dropdown">
+            <button class="btn position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-bell fs-5"></i>
+                <span id="notificationCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                    0
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                <li><h6 class="dropdown-header">Notifications</h6></li>
+                <div id="notificationList">
+                    <!-- Notifications will be loaded here -->
+                </div>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-center" href="@Url.Action("Notices", "Announcement")">View All</a></li>
+            </ul>
+        </div>
+        <a asp-controller="Security" asp-action="Myprofile" style="display:inline-block;">
+            <img src="https://randomuser.me/api/portraits/lego/1.jpg" alt="User Avatar" class="rounded-circle" width="35" style="cursor:pointer;" />
+        </a>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        height: 72px;
+        background-color: #fff !important;
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar-brand img {
+        margin-right: 0.5rem;
+    }
+
+    .logoutButton {
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Notification styles */
+    .notification-item {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+    }
+
+    .notification-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .notification-item.unread {
+        background-color: #f0f7ff;
+    }
+
+    .notification-item .notification-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .notification-item .notification-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    @@media (max-width: 768px) {
+        .navbar {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1rem;
+        }
+        
+        .navbar-brand img {
+            width: 60px;
+            height: 32px;
+        }
+
+        .logoutButton {
+            padding: 0.5rem;
+        }
+
+        .logoutButton svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .gap-3 {
+            gap: 0.5rem !important;
+        }
+    }
+</style>
+
+<script>
+    // Function to load notifications
+    function loadNotifications() {
+        fetch('/Announcement/GetUnreadNotifications')
+            .then(response => response.json())
+            .then(data => {
+                const notificationList = document.getElementById('notificationList');
+                const notificationCount = document.getElementById('notificationCount');
+                
+                // Only count unread notifications
+                let unreadCount = data.length;
+                if (unreadCount > 0) {
+                    notificationCount.textContent = unreadCount;
+                    notificationCount.style.display = 'block';
+                } else {
+                    notificationCount.style.display = 'none';
+                }
+
+                // Clear existing notifications
+                notificationList.innerHTML = '';
+
+                // Add new notifications
+                data.forEach(notification => {
+                    // Create a link to the details page
+                    const link = document.createElement('a');
+                    link.href = `/Announcement/Details/${notification.id}`;
+                    link.className = 'dropdown-item notification-item unread';
+                    link.style.cursor = 'pointer';
+                    link.innerHTML = `
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-time">${new Date(notification.datePosted).toLocaleString()}</div>
+                    `;
+                    link.onclick = (e) => {
+                        // Mark as read before redirecting
+                        e.preventDefault();
+                        markAsRead(notification.id, link.href);
+                    };
+                    notificationList.appendChild(link);
+                });
+
+                if (data.length === 0) {
+                    notificationList.innerHTML = '<li class="dropdown-item text-center text-muted">No new notifications</li>';
+                }
+            })
+            .catch(error => console.error('Error loading notifications:', error));
+    }
+
+    // Modified to redirect after marking as read
+    function markAsRead(notificationId, redirectUrl) {
+        fetch('/Announcement/MarkAsRead', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: notificationId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Optionally reload notifications, but redirect to details page
+                window.location.href = redirectUrl;
+            }
+        })
+        .catch(error => console.error('Error marking notification as read:', error));
+    }
+
+    // Load notifications when page loads
+    document.addEventListener('DOMContentLoaded', loadNotifications);
+
+    // Refresh notifications every minute
+    setInterval(loadNotifications, 60000);
+
+    document.getElementById('logoutForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = document.getElementById('logoutBtn');
+        btn.classList.add('falling');
+        btn.querySelector('.button-text').textContent = 'Logging out...';
+        setTimeout(() => {
+            this.submit();
+        }, 3000);
+    });
+</script>

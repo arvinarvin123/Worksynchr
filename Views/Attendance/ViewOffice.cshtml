@@ -1,0 +1,117 @@
+﻿@model List<HRPayrollSystem.Models.OfficeMapViewModel>
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Office Locations";
+}
+
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Attendance")">Attendance</a></li>
+                <li class="breadcrumb-item active" aria-current="page">View Offices</li>
+            </ol>
+        </nav>
+
+        <!-- Title and Button -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold">View Offices</h3>
+        </div>
+
+    <div id="map" style="height: 600px;" class="rounded shadow-sm"></div>
+</div>
+</main>
+
+<script>
+    mapboxgl.accessToken = '@Configuration["Mapbox:AccessToken"]';
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v12',
+        center: [125.6209, 7.1117], // Initial center point
+        zoom: 14
+    });
+
+    // Show user location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const userCoords = [position.coords.longitude, position.coords.latitude];
+
+            new mapboxgl.Marker({ color: "blue" })
+                .setLngLat(userCoords)
+                .setPopup(new mapboxgl.Popup().setText("You are here"))
+                .addTo(map);
+
+            map.flyTo({ center: userCoords, zoom: 15 });
+        });
+    }
+
+     // Add office markers and geofences
+        // Add office markers and geofences
+    const offices = @Html.Raw(Json.Serialize(Model));
+
+    // Only include OfficeIDs 4, 5, 6, 7
+    const filteredOffices = offices.filter(office =>
+        [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50].includes(office.officeID)
+    );
+
+    filteredOffices.forEach(office => {
+        const coords = [office.longitude, office.latitude];
+
+        // Add a marker for the office
+        new mapboxgl.Marker({ color: "red" })
+            .setLngLat(coords)
+            .setPopup(new mapboxgl.Popup().setText(office.officeName))
+            .addTo(map);
+
+        // Draw geofence if exists
+        if (office.geoFence) {
+            try {
+                const geoJson = JSON.parse(office.geoFence);
+
+                map.on('load', () => {
+                    map.addSource(`geofence-${office.officeID}`, {
+                        type: 'geojson',
+                        data: geoJson
+                    });
+
+                    map.addLayer({
+                        id: `geofence-fill-${office.officeID}`,
+                        type: 'fill',
+                        source: `geofence-${office.officeID}`,
+                        layout: {},
+                        paint: {
+                            'fill-color': '#088',
+                            'fill-opacity': 0.3
+                        }
+                    });
+
+                    map.addLayer({
+                        id: `geofence-outline-${office.officeID}`,
+                        type: 'line',
+                        source: `geofence-${office.officeID}`,
+                        layout: {},
+                        paint: {
+                            'line-color': '#088',
+                            'line-width': 2
+                        }
+                    });
+                });
+            } catch (e) {
+                console.warn(`Invalid GeoJSON for office: ${office.officeName}`);
+            }
+        }
+    });
+
+
+    
+</script>

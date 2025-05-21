@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Apply for Leave";
+    ViewData["BodyClass"] = "apply-leave-page";
+}
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Myleave", "Leave")">My Leaves</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Apply Leave</li>
+            </ol>
+        </nav>
+
+        <!-- Title -->
+        <div class="mb-4">
+            <h3 class="fw-semibold">Apply for Leave</h3>
+        </div>
+
+        <!-- Leave Form Card -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Success"]
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["Error"]
+                    </div>
+                }
+
+                <form asp-action="ApplyLeave" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label">Leave Type <span class="text-danger">*</span></label>
+                        <select class="form-select" name="LeaveType" required>
+                            <option value="" selected disabled>Select Leave Type</option>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Vacation Leave">Vacation Leave</option>
+                            <option value="Maternity Leave">Maternity Leave</option>
+                            <option value="Emergency Leave">Emergency Leave</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Start Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" name="StartDate" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">End Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" name="EndDate" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Reason for Leave <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="Reason" rows="4" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags and potentially dangerous HTML are not allowed"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="@Url.Action("Myleave", "Leave")" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>

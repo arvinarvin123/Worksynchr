@@ -1,0 +1,511 @@
+﻿@{
+    var role = Context.Session.GetString("Role");
+}
+
+<!-- Styles remain unchanged -->
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .sidebar {
+        width: 280px;
+        height: calc(100vh - 72px); /* Subtract navbar height */
+        background-color: #f9fafb;
+        padding: 1rem;
+        border-right: 1px solid #e5e7eb;
+        position: fixed;
+        left: 0;
+        top: 72px; /* Start below navbar */
+        z-index: 1001;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar-fab {
+        display: none;
+        position: fixed;
+        top: 80px;
+        left: 10px;
+        z-index: 1100;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 0.4rem 0.5rem;
+        cursor: pointer;
+        font-size: 1.3rem;
+        color: #374151;
+        opacity: 0.85;
+        transition: background 0.2s, opacity 0.2s;
+    }
+    .sidebar-fab:hover {
+        background: #f3f4f6;
+        color: #1e40af;
+        opacity: 1;
+    }
+    .sidebar-fab.hide {
+        display: none !important;
+    }
+
+    @@media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 72px; /* Start below navbar */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .sidebar-fab {
+            display: block;
+        }
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        color: #111827;
+        padding: 0.6rem 0.75rem;
+        border-radius: 0.5rem;
+        transition: background 0.2s ease-in-out;
+    }
+
+        .nav-link:hover {
+            background-color: #f3f4f6;
+            text-decoration: none;
+        }
+
+        .nav-link.active,
+        .nav-link.show,
+        .nav-link[aria-expanded="true"] {
+            background-color: #e5e7eb;
+            color: #1e40af;
+        }
+
+        .nav-link i {
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            color: #6b7280;
+        }
+
+    .collapse .nav-link {
+        padding-left: 2.2rem;
+        font-weight: 400;
+        color: #374151;
+    }
+
+        .collapse .nav-link:hover {
+            color: #1e3a8a;
+        }
+
+    .nav-item + .nav-item {
+        margin-top: 0.25rem;
+    }
+
+    .nav .collapse {
+        margin-top: 0.25rem;
+    }
+
+    .nav-section-divider {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1002;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+
+    @@media (max-width: 768px) {
+        .sidebar-toggle {
+            display: block;
+        }
+    }
+
+    .sidebar-logout-btn:hover, .sidebar-logout-btn:focus {
+        background-color: #fbeaec;
+        color: #A93F55;
+        text-decoration: none;
+    }
+</style>
+
+<!-- Floating burger button for mobile -->
+<button class="sidebar-fab" id="sidebarToggle">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- Add overlay div -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="sidebar shadow-sm" id="sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link active" asp-controller="Dashboard" asp-action="Index">
+                <i class="bi bi-house-door"></i> Dashboard
+            </a>
+        </li>
+
+        @if (role == "Employee")
+        {
+            <!-- Employee-only menus -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#leaveMenu">
+                    <i class="bi bi-arrow-left"></i> Leave
+                </a>
+                <ul class="collapse list-unstyled" id="leaveMenu">
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="Myleave">My Leave</a></li>
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="ApplyLeave">Apply for Leave</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#attendanceMenu">
+                    <i class="bi bi-clock"></i> Attendance
+                </a>
+                <ul class="collapse list-unstyled" id="attendanceMenu">
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Myattendance">My Attendance</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#adminMenu">
+                    <i class="bi bi-folder"></i> Payroll
+                </a>
+                <ul class="collapse list-unstyled" id="adminMenu">
+                    <li><a class="nav-link" asp-controller="Payroll" asp-action="Mypayroll">My Payslip</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#announcementMenu">
+                    <i class="bi bi-folder"></i> Announcement
+                </a>
+                <ul class="collapse list-unstyled" id="announcementMenu">
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Notices">View Announcements</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#settingMenu">
+                    <i class="bi bi-gear"></i> Security & Settings
+                </a>
+                <ul class="collapse list-unstyled" id="settingMenu">
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Myprofile">Profile</a></li>
+                </ul>
+            </li>
+        }
+        else if (role == "HR")
+        {
+            <!-- HR-only menus -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#employeeMenu">
+                    <i class="bi bi-person"></i> Employee
+                </a>
+                <ul class="collapse list-unstyled" id="employeeMenu">
+                    <li><a class="nav-link" asp-controller="Employees" asp-action="Index">All Employee</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#leaveMenu">
+                    <i class="bi bi-arrow-left"></i> Leave
+                </a>
+                <ul class="collapse list-unstyled" id="leaveMenu">
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="Index">Leave Request</a></li>
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="Myleave">My Leave</a></li>
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="ApplyLeave">Apply for Leave</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#attendanceMenu">
+                    <i class="bi bi-clock"></i> Attendance
+                </a>
+                <ul class="collapse list-unstyled" id="attendanceMenu">
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Index">Attendance</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Report">Attendance Report</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Create">Setup Office Location</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Myattendance">My Attendance</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#announcementMenu">
+                    <i class="bi bi-folder"></i> Announcement
+                </a>
+                <ul class="collapse list-unstyled" id="announcementMenu">
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Create">Create Announcement</a></li>
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Notices">View Announcements</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#settingMenu">
+                    <i class="bi bi-gear"></i> Security & Settings
+                </a>
+                <ul class="collapse list-unstyled" id="settingMenu">
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Roles">User Roles</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="AuditLogs">Audit Logs</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Department">Departments</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Position">Positions</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Myprofile">Profile</a></li>
+                </ul>
+            </li>
+        }
+        else if (role == "PayrollStaff")
+        {
+            <!-- Payroll Staff-only menus -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#leaveMenu">
+                    <i class="bi bi-arrow-left"></i> Leave
+                </a>
+                <ul class="collapse list-unstyled" id="leaveMenu">
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="Myleave">My Leave</a></li>
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="ApplyLeave">Apply for Leave</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#attendanceMenu">
+                    <i class="bi bi-clock"></i> Attendance
+                </a>
+                <ul class="collapse list-unstyled" id="attendanceMenu">
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Report">Attendance Report</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Myattendance">My Attendance</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#payrollMenu">
+                    <i class="bi bi-folder"></i> Payroll
+                </a>
+                <ul class="collapse list-unstyled" id="payrollMenu">
+                    <li><a class="nav-link" data-bs-toggle="modal" data-bs-target="#customModal">Payroll List</a></li>
+                    <li><a class="nav-link" asp-controller="Payroll" asp-action="Mypayroll">My Payslip</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#announcementMenu">
+                    <i class="bi bi-folder"></i> Announcement
+                </a>
+                <ul class="collapse list-unstyled" id="announcementMenu">
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Create">Create Announcement</a></li>
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Notices">View Announcements</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#settingMenu">
+                    <i class="bi bi-gear"></i> Security & Settings
+                </a>
+                <ul class="collapse list-unstyled" id="settingMenu">
+                    <li><a class="nav-link" asp-controller="Security" asp-action="AuditLogs">Audit Logs</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Department">Departments</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Position">Positions</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Myprofile">Profile</a></li>
+                </ul>
+            </li>
+        }
+        else if (role == "Admin")
+        {
+            <!-- Admin Menus - Full Access -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#employeeMenu">
+                    <i class="bi bi-person"></i> Employee
+                </a>
+                <ul class="collapse list-unstyled" id="employeeMenu">
+                    <li><a class="nav-link" asp-controller="Employees" asp-action="Index">All Employee</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#leaveMenu">
+                    <i class="bi bi-arrow-left"></i> Leave
+                </a>
+                <ul class="collapse list-unstyled" id="leaveMenu">
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="Index">Leave Request</a></li>
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="Myleave">My Leave</a></li>
+                    <li><a class="nav-link" asp-controller="Leave" asp-action="ApplyLeave">Apply for Leave</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#attendanceMenu">
+                    <i class="bi bi-clock"></i> Attendance
+                </a>
+                <ul class="collapse list-unstyled" id="attendanceMenu">
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Index">Attendance</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Report">Attendance Report</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Create">Setup Office Location</a></li>
+                    <li><a class="nav-link" asp-controller="Attendance" asp-action="Myattendance">My Attendance</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#payrollMenu">
+                    <i class="bi bi-folder"></i> Payroll
+                </a>
+                <ul class="collapse list-unstyled" id="payrollMenu">
+                    <li><a class="nav-link" data-bs-toggle="modal" data-bs-target="#customModal">Payroll List</a></li>
+                    <li><a class="nav-link" asp-controller="Payroll" asp-action="Mypayroll">My Payslip</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#announcementMenu">
+                    <i class="bi bi-folder"></i> Announcement
+                </a>
+                <ul class="collapse list-unstyled" id="announcementMenu">
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Create">Create Announcement</a></li>
+                    <li><a class="nav-link" asp-controller="Announcement" asp-action="Notices">View Announcements</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="collapse" data-bs-target="#settingMenu">
+                    <i class="bi bi-gear"></i> Security & Settings
+                </a>
+                <ul class="collapse list-unstyled" id="settingMenu">
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Roles">User Roles</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="AuditLogs">Audit Logs</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Department">Departments</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Position">Positions</a></li>
+                    <li><a class="nav-link" asp-controller="Security" asp-action="Myprofile">Profile</a></li>
+                </ul>
+            </li>
+        }
+    </ul>
+    <!-- Divider above logout -->
+    <hr style="margin: 1.5rem 0 1rem 0; border-top: 1px solid #e5e7eb;">
+    <!-- Enhanced Logout Button -->
+    <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" style="position: absolute; bottom: 2rem; left: 0; width: 100%; text-align: center;">
+        <button type="submit" class="sidebar-logout-btn nav-link" style="display: flex; align-items: center; justify-content: center; gap: 0.7rem; color: #A93F55; font-weight: 600; font-size: 1.1rem; border: none; background: none; width: 90%; margin: 0 auto; border-radius: 0.5rem; transition: background 0.2s;">
+            <i class="bi bi-box-arrow-right" style="font-size: 1.5rem;"></i>
+            <span>Logout</span>
+        </button>
+    </form>
+</div>
+
+<div class="modal fade" id="customModal" tabindex="-1" aria-labelledby="customModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <!-- Wider modal (xl) -->
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 class="fw-semibold">1. Wage Payment and Frequency</h4>
+                <p>
+                    In accordance with the Labor Code of the Philippines (Presidential Decree No. 442), employees shall receive their wages on a semi-monthly basis. The first pay period covers the 1st to the 15th of the month, and the second pay period covers the 16th to the last day of the month. The system will process payroll computations accordingly, with detailed breakdowns of gross salary, statutory deductions, and net pay.
+                </p>
+
+                <h4 class="fw-semibold">2. Taxation and Statutory Contributions</h4>
+                <p>
+                    Pursuant to Republic Act No. 10963 (TRAIN Law), withholding taxes will be calculated based on applicable income brackets for each semi-monthly cycle. Mandatory contributions such as Social Security System (SSS), PhilHealth, and Pag-IBIG shall also be computed and deducted as per current government-prescribed rates.
+                </p>
+
+                <h4 class="fw-semibold">3. Payroll Discrepancies and Reimbursements</h4>
+                <p>
+                    In the event of payroll discrepancies or errors, employees may request a reimbursement or adjustment. The system supports correction mechanisms, and all approved reimbursements or deductions will be reflected in the subsequent payroll period.
+                </p>
+
+                <h4 class="fw-semibold">4. Data Privacy and Confidentiality</h4>
+                <p>
+                    All payroll data is governed by the Data Privacy Act of 2012 (Republic Act No. 10173). Information such as salaries, deductions, and personal employee data is strictly confidential and will be securely stored and accessible only by authorized personnel within the organization.
+                </p>
+
+                <h4 class="fw-semibold">5. Employee Responsibility</h4>
+                <p>
+                    It is the responsibility of each employee to ensure that their payroll information, including salary grade, attendance, and deductions, is accurate and up-to-date. Any discrepancies must be reported promptly to the Human Resources or Payroll Department for immediate correction.
+                </p>
+
+                <h4 class="fw-semibold">6. Report Generation and Use</h4>
+                <p>
+                    The system provides functionality for exporting payroll reports in PDF or CSV format. This feature is intended solely for official use by authorized users. Any unauthorized access, distribution, or misuse of payroll data may be subject to investigation and disciplinary action.
+                </p>
+
+                <p class="mt-4">
+                    By using this system, you agree to comply with the aforementioned terms and conditions. Continued access and use of the payroll system signify your understanding and acceptance of these policies.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Decline</button>
+                <a asp-controller="Payroll" asp-action="Index" class="btn btn-primary">Accept and Proceed</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add JavaScript for sidebar toggle -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+            sidebarOverlay.classList.toggle('show');
+            // Hide burger when sidebar is open
+            if (sidebar.classList.contains('show')) {
+                sidebarToggle.classList.add('hide');
+            } else {
+                sidebarToggle.classList.remove('hide');
+            }
+        }
+
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Hide burger when sidebar is open on load
+        if (sidebar.classList.contains('show')) {
+            sidebarToggle.classList.add('hide');
+        }
+
+        // Prevent default navigation for dropdown parent links
+        document.querySelectorAll('.nav-link.dropdown-toggle').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Let Bootstrap handle the collapse
+            });
+        });
+
+        // Close sidebar when clicking a link on mobile
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768 && !link.classList.contains('dropdown-toggle')) {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                    sidebarToggle.classList.remove('hide');
+                }
+            });
+        });
+    });
+</script>

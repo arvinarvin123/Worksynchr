@@ -1,0 +1,63 @@
+@model HRPayrollSystem.Models.Employee
+@{
+    ViewData["Title"] = "Edit Profile";
+    ViewData["BodyClass"] = "leave-page";
+}
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Security")">Security & Settings</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Myprofile", "Security")">My Profile</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+            </ol>
+        </nav>
+
+        <!-- Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">Edit Profile</h3>
+        </div>
+
+        <div class="leave-card">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+            <form asp-action="EditProfile" method="post" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="EmployeeID" />
+
+                <div class="col-md-6">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" value="@($"{Model.FirstName} {Model.LastName}")" readonly />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ContactNumber" class="form-label">Phone Number</label>
+                    <input asp-for="ContactNumber" class="form-control" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags are not allowed" />
+                    <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Address" class="form-label">Address</label>
+                    <textarea asp-for="Address" class="form-control" rows="2" data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags and potentially dangerous HTML are not allowed"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to save changes to your profile?');">Save</button>
+                    <a asp-action="Myprofile" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main> 

@@ -1,0 +1,181 @@
+﻿@model Office
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Create Office";
+    ViewData["BodyClass"] = "leave-page"; // Reuse consistent styling
+}
+
+
+<main class="p-4 flex-grow-1 bg-light">
+
+    <div class="container-fluid px-4 py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Attendance")">Attendance</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add Office</li>
+            </ol>
+        </nav>
+
+    <!-- Title -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-semibold">Add New Office</h3>
+    </div>
+
+    <!-- Form Card -->
+    <div class="leave-card">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Office Name</label>
+                <input asp-for="Name" class="form-control" placeholder="e.g., Main Branch" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label">Address</label>
+                <input asp-for="Address" class="form-control" placeholder="Street, City, Province" />
+                <span asp-validation-for="Address" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Select Office Location on Map</label>
+                <div id="map" class="rounded shadow-sm" style="height: 800px; border: 1px solid #ccc;"></div>
+            </div>
+
+            <input type="hidden" asp-for="Latitude" id="Latitude" />
+            <input type="hidden" asp-for="Longitude" id="Longitude" />
+            <input type="hidden" asp-for="GeoFence" id="GeoFence" />
+
+
+
+            <div class="mb-4">
+                <label asp-for="RadiusInMeters" class="form-label">Radius (meters)</label>
+                <input asp-for="RadiusInMeters" class="form-control" placeholder="e.g., 100" />
+                <span asp-validation-for="RadiusInMeters" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Office</button>
+            </div>
+        </form>
+    </div>
+</div>
+</main>
+
+<!-- Mapbox Scripts -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.0/mapbox-gl-draw.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.0/mapbox-gl-draw.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+
+
+<script>
+    mapboxgl.accessToken = '@Configuration["Mapbox:AccessToken"]';
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [125.6105, 7.0731],
+        zoom: 13
+    });
+
+
+    // Show user location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const userCoords = [position.coords.longitude, position.coords.latitude];
+
+            new mapboxgl.Marker({ color: "blue" })
+                .setLngLat(userCoords)
+                .setPopup(new mapboxgl.Popup().setText("You are here"))
+                .addTo(map);
+
+            map.flyTo({ center: userCoords, zoom: 15 });
+        });
+    }
+
+    const draw = new MapboxDraw({
+        displayControlsDefault: false,
+        controls: {
+            polygon: true,
+            trash: true
+        },
+        defaultMode: 'draw_polygon'
+    });
+
+    map.addControl(draw);
+
+    const geoFenceInput = document.getElementById('GeoFence');
+    const latInput = document.getElementById('Latitude');
+    const lngInput = document.getElementById('Longitude');
+
+    // Update geofence when drawing ends
+    map.on('draw.create', updateGeoFence);
+    map.on('draw.update', updateGeoFence);d
+    map.on('draw.delete', () => {
+        geoFenceInput.value = '';
+        latInput.value = '';
+        lngInput.value = '';
+        draw.changeMode('draw_polygon'); // Allow drawing again
+    });
+
+    // Function to lock the drawing
+    function lockDrawing() {
+        const data = draw.getAll();
+        if (data.features.length > 0) {
+            const polygon = data.features[0];
+            geoFenceInput.value = JSON.stringify(polygon.geometry);
+
+            // Get centroid to auto-fill Latitude & Longitude
+            const centroid = turf.centroid(polygon);
+            latInput.value = centroid.geometry.coordinates[1];
+            lngInput.value = centroid.geometry.coordinates[0];
+
+            // Lock drawing
+            draw.changeMode('simple_select');
+        }
+    }
+
+    // Listen for key press (e.g., Enter key to lock drawing)
+    window.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            lockDrawing();
+        }
+    });
+
+    // Ensure user doesn't submit without drawing
+    document.querySelector('form').addEventListener('submit', function (e) {
+        if (!geoFenceInput.value) {
+            e.preventDefault();
+            alert("Please draw a geofence area on the map before saving.");
+        }
+    });
+
+    function updateGeoFence(e) {
+        const data = draw.getAll();
+
+        if (data.features.length > 1) {
+            const first = data.features[0];
+            draw.deleteAll();
+            draw.add(first);
+        }
+
+        if (data.features.length > 0) {
+            const polygon = data.features[0];
+            geoFenceInput.value = JSON.stringify(polygon.geometry);
+
+            // Get centroid to auto-fill Latitude & Longitude
+            const centroid = turf.centroid(polygon);
+            latInput.value = centroid.geometry.coordinates[1];
+            lngInput.value = centroid.geometry.coordinates[0];
+        }
+    }
+</script>
+
+
+<!-- Include Turf.js for geofencing (circle drawing) -->
+
+

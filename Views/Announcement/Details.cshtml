@@ -1,0 +1,134 @@
+@model Announcements
+@{
+    ViewData["Title"] = "Notice Details";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb;
+        color: #111827;
+    }
+    .breadcrumb {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 1.25rem;
+    }
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    .details-wrapper {
+        max-width: 1100px;
+        margin: auto;
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 2rem 3.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.75rem;
+        color: #1f2937;
+    }
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+        margin-top: 2rem;
+    }
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1rem 2rem;
+        margin-bottom: 1.5rem;
+    }
+    .details-label {
+        font-weight: 500;
+        color: #4b5563;
+    }
+    .details-value {
+        color: #374151;
+    }
+    .notice-message {
+        background: #f3f4f6;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+        color: #1f2937;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        word-break: break-word;
+    }
+    .button-row {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+    }
+    .btn-primary {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        border: none;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        background-color: #212529;
+        color: #fff;
+        border: 2px solid #212529;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+        background-color: #fff;
+        color: #212529;
+        border: 2px solid #212529;
+    }
+</style>
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <nav aria-label="breadcrumb">
+             <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Notices", "Announcement")">Announcement</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Notice Details</li>
+            </ol>
+        </nav>
+
+        <div class="details-wrapper">
+            <h2>📢 Notice Details</h2>
+
+            <div class="section-title">General Information</div>
+            <div class="details-grid">
+                <div class="details-label">Title:</div>
+                <div class="details-value">@Model.Title</div>
+                <div class="details-label">Category:</div>
+                <div class="details-value">@Model.MessageType</div>
+                <div class="details-label">Date Posted:</div>
+                <div class="details-value">@Model.DatePosted.ToString("MMMM dd, yyyy")</div>
+                <div class="details-label">Expiry Date:</div>
+                <div class="details-value">@(Model.ExpiryDate?.ToString("MMMM dd, yyyy") ?? "N/A")</div>
+            </div>
+
+            <div class="section-title">Message</div>
+            <div class="notice-message">
+                @Model.Message
+            </div>
+
+            <div class="button-row">
+                <a href="@Url.Action("Notices", "Announcement")" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back
+                </a>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,104 @@
+﻿@model List<AuditLog>
+
+@{
+    ViewData["Title"] = "Audit Logs";
+    ViewData["BodyClass"] = "audit-logs";
+}
+<main class="p-4 flex-grow-1 bg-light">
+
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Security")">Security & Settings</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Audit Logs</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-3">
+        <h3 class="fw-semibold mb-0">Audit Logs</h3>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+        <form method="get" asp-action="Auditlogs" class="row g-3 align-items-end mb-3">
+            <div class="col-12 col-md-6 col-lg-4">
+                <label class="filter-label mb-1">Date Range</label>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                    </div>
+                    <div class="col-6">
+                        <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <label class="filter-label mb-1">User</label>
+                <input type="text" name="userSearch" class="form-control" placeholder="Enter username..." value="@ViewBag.UserSearch" />
+            </div>
+            <div class="col-12 col-md-6 col-lg-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>User</th>
+                        <th>Action Taken</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://randomuser.me/api/portraits/lego/1.jpg" class="avatar me-2" />
+                                    @log.User.Username
+                                </div>
+                            </td>
+                            <td>@log.ActionTaken</td>
+                            <td>@log.Timestamp?.ToString("MMM d, yyyy – hh:mm tt")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-3">
+            <form method="get" asp-action="Auditlogs" class="d-flex align-items-center gap-2">
+                <label for="pageInput" class="mb-0">Page:</label>
+                <input type="number"
+                       name="page"
+                       id="pageInput"
+                       min="1"
+                       max="@ViewBag.TotalPages"
+                       value="@ViewBag.CurrentPage"
+                       class="form-control"
+                       style="width: 80px;"
+                       onchange="this.form.submit()" />
+                <span>of @ViewBag.TotalPages</span>
+            </form>
+
+            <div class="d-flex gap-2">
+                <a asp-action="Auditlogs" asp-route-page="@(ViewBag.CurrentPage - 1)"
+                   class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                    ‹ Prev
+                </a>
+
+                <a asp-action="Auditlogs" asp-route-page="@(ViewBag.CurrentPage + 1)"
+                   class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                    Next ›
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+</main>

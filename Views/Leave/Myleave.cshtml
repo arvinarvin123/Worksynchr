@@ -1,0 +1,138 @@
+﻿@using System.Linq
+
+@{
+    ViewData["Title"] = "My Leave";
+    ViewData["BodyClass"] = "leave-page";
+}
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Leave")">Leave</a></li>
+                <li class="breadcrumb-item active" aria-current="page">My Leaves</li>
+            </ol>
+        </nav>
+
+        <!-- Title -->
+        <div class="mb-4">
+            <h3 class="fw-semibold">My Leaves</h3>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="get" asp-action="Myleave" class="mb-4">
+                    <!-- Filter Tabs -->
+                    <div class="mb-4 d-flex flex-wrap gap-2">
+                        @foreach (var tab in new[] { "All", "Pending", "Approved", "Rejected" })
+                        {
+                            <button type="submit"
+                                    name="status"
+                                    value="@tab"
+                                    class="btn btn-outline-secondary @(ViewBag.Status == tab || (string.IsNullOrEmpty(ViewBag.Status) && tab == "All") ? "active" : "")">
+                                @tab
+                            </button>
+                        }
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <select class="form-select" name="leaveType" onchange="this.form.submit()">
+                                <option value="">All Leave Types</option>
+                                <option value="Sick Leave" selected="@(ViewBag.LeaveType == "Sick Leave" ? "selected" : null)">Sick Leave</option>
+                                <option value="Vacation Leave" selected="@(ViewBag.LeaveType == "Vacation Leave" ? "selected" : null)">Vacation Leave</option>
+                                <option value="Maternity Leave" selected="@(ViewBag.LeaveType == "Maternity Leave" ? "selected" : null)">Maternity Leave</option>
+                                <option value="Emergency Leave" selected="@(ViewBag.LeaveType == "Emergency Leave" ? "selected" : null)">Emergency Leave</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <input type="date"
+                                   class="form-control"
+                                   name="date"
+                                   value="@ViewBag.Date"
+                                   onchange="this.form.submit()" />
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Leave Request Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Count > 0)
+                            {
+                                foreach (var leave in Model)
+                                {
+                                    <tr>
+                                        <td>@leave.LeaveType</td>
+                                        <td>@leave.StartDate.ToString("MM/dd/yyyy")</td>
+                                        <td>@leave.EndDate.ToString("MM/dd/yyyy")</td>
+                                        <td>
+                                            <span class="badge @(leave.ApprovalStatus == "Approved" ? "bg-success" : leave.ApprovalStatus == "Rejected" ? "bg-danger" : "bg-warning text-dark")">
+                                                @leave.ApprovalStatus
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ViewLeave", "Leave", new { leaveId = leave.LeaveID })" class="icon-action-btn view" title="View Details">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No leave records found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+                    <form method="get" asp-action="Myleave" class="d-flex align-items-center gap-2">
+                        <label for="pageInput" class="mb-0">Page:</label>
+                        <input type="number"
+                               name="page"
+                               id="pageInput"
+                               min="1"
+                               max="@ViewBag.TotalPages"
+                               value="@ViewBag.CurrentPage"
+                               class="form-control"
+                               style="width: 80px;"
+                               onchange="this.form.submit()" />
+                        <span>of @ViewBag.TotalPages</span>
+                    </form>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Myleave"
+                           asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                            ‹ Prev
+                        </a>
+
+                        <a asp-action="Myleave"
+                           asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                            Next ›
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

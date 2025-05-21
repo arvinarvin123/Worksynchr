@@ -1,0 +1,380 @@
+﻿@using System.Globalization
+@model IEnumerable<HRPayrollSystem.Models.Payroll>
+
+@{
+	ViewData["Title"] = "Payroll List";
+	var canGenerate = ViewBag.CanGeneratePayroll as bool? ?? false;
+	var today = DateTime.Today;
+	var currentPeriodLabel = today.Day <= 15 ? "1st Half" : "2nd Half";
+	var successMessage = TempData["Message"];
+	var errorMessage = TempData["ErrorMessage"];
+}
+
+<style>
+	body {
+		font-family: 'Inter', sans-serif;
+		background-color: #f9fafb;
+		color: #111827;
+	}
+
+	.breadcrumb {
+		font-size: 0.95rem;
+		color: #6b7280;
+		margin-bottom: 1.25rem;
+	}
+
+		.breadcrumb a {
+			text-decoration: none;
+			color: #6b7280;
+		}
+
+			.breadcrumb a:hover {
+				text-decoration: underline;
+			}
+
+	h3 {
+		font-size: 1.5rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+	}
+
+	.card {
+		background-color: #fff;
+		border-radius: 1rem;
+		padding: 2rem;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+		margin-bottom: 1.5rem;
+	}
+
+	.btn-outline {
+		border: 1px solid #d1d5db;
+		padding: 0.5rem 1.2rem;
+		border-radius: 0.5rem;
+		font-size: 0.9rem;
+		background-color: white;
+		font-weight: 500;
+		transition: all 0.2s ease-in-out;
+	}
+
+		.btn-outline:hover {
+			background-color: #f3f4f6;
+			border-color: #9ca3af;
+		}
+
+	.btn-primary {
+		background-color: #79ADDC;
+		color: white;
+		padding: 0.5rem 1.2rem;
+		border-radius: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 500;
+		border: none;
+		transition: all 0.2s ease-in-out;
+	}
+
+		.btn-primary:hover {
+			background-color: #374151;
+			color: white;
+		}
+
+	.table thead th {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: #6b7280;
+		border-bottom: 1px solid #e5e7eb;
+		padding-bottom: 0.75rem;
+	}
+
+	.table tbody td {
+		font-size: 0.95rem;
+		font-weight: 500;
+		color: #374151;
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
+		vertical-align: middle;
+	}
+
+	.badge {
+		padding: 0.5em 0.75em;
+		font-weight: 500;
+		border-radius: 0.375rem;
+	}
+
+	.badge.bg-success {
+		background-color: #33595E !important;
+		color: white;
+	}
+
+	.badge.bg-warning {
+		background-color: #FDF1DD !important;
+		color: black;
+	}
+
+	.form-label {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #4b5563;
+		margin-bottom: 0.5rem;
+	}
+
+	.form-control, .form-select {
+		border-radius: 0.5rem;
+		border: 1px solid #d1d5db;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+	}
+
+	.form-control:focus, .form-select:focus {
+		border-color: #9ca3af;
+		box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.1);
+	}
+
+	.alert {
+		border-radius: 0.5rem;
+		padding: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.alert-success {
+		background-color: #dcfce7;
+		border-color: #86efac;
+		color: #166534;
+	}
+
+	.alert-danger {
+		background-color: #fee2e2;
+		border-color: #fca5a5;
+		color: #991b1b;
+	}
+
+	.avatar {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		object-fit: cover;
+		margin-right: 10px;
+	}
+
+	/* Modal Styles */
+	.modal-backdrop.show {
+		opacity: 0.5;
+	}
+</style>
+
+<main class="p-4 flex-grow-1 bg-light">
+	<div class="container-fluid px-4 py-4">
+		<!-- Breadcrumb -->
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Payroll</li>
+			</ol>
+		</nav>
+
+		<!-- Header -->
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+			<h3 class="fw-semibold mb-0">Payroll List</h3>
+			<div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
+				<div class="d-flex gap-2 flex-wrap">
+					<a href="@Url.Action("ExportReport", "Payroll")" class="btn btn-outline btn-sm">
+						<i class="fas fa-file-export me-2"></i>Export Report
+					</a>
+					<a class="btn btn-outline btn-sm"
+					   asp-action="ExportPayrollPdf"
+					   asp-route-searchString="@ViewBag.CurrentSearch"
+					   asp-route-statusFilter="@ViewBag.CurrentStatus"
+					   asp-route-monthFilter="@ViewBag.CurrentMonth"
+					   asp-route-yearFilter="@ViewBag.CurrentYear">
+						<i class="fas fa-file-pdf me-2"></i>Export PDF
+					</a>
+				</div>
+				<form asp-action="GenerateSemiMonthlyPayroll" method="post" class="d-flex flex-wrap gap-2 align-items-center">
+					<select id="selectedMonth" name="selectedMonth" class="form-select form-select-sm w-auto" required>
+						@for (int m = 1; m <= 12; m++)
+						{
+							<option value="@m">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)</option>
+						}
+					</select>
+					<select id="half" name="half" class="form-select form-select-sm w-auto" required>
+						<option value="1">1st Half (1–15)</option>
+						<option value="2">2nd Half (16–End)</option>
+					</select>
+					<button type="submit" class="btn btn-outline btn-sm fw-semibold">
+						<i class="fas fa-calculator me-2"></i>Generate Payroll
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Success/Error Alerts -->
+		@if (TempData["Message"] != null)
+		{
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<i class="fas fa-check-circle me-2"></i>@TempData["Message"]
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		}
+		@if (TempData["ErrorMessage"] != null)
+		{
+			<div class="alert alert-danger alert-dismissible fade show" role="alert">
+				<i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+		}
+
+		<!-- Table Card with Filters -->
+		<div class="card">
+			<form method="get" asp-action="Index" class="row g-3 mb-4">
+				<div class="col-12 col-md-6 col-lg-3">
+					<label for="searchString" class="form-label">Search Employee</label>
+					<div class="input-group">
+						<span class="input-group-text bg-white border-end-0" style="font-size:1.2em;">
+							🔍
+						</span>
+						<input type="text" class="form-control border-start-0" id="searchString" name="searchString" value="@ViewBag.CurrentSearch" placeholder="Search by name...">
+					</div>
+				</div>
+				<div class="col-12 col-md-6 col-lg-2">
+					<label for="statusFilter" class="form-label">Status</label>
+					<select class="form-select" id="statusFilter" name="statusFilter">
+						<option value="">All Status</option>
+						<option value="Processed" selected="@(ViewBag.CurrentStatus == "Processed")">Processed</option>
+						<option value="Pending" selected="@(ViewBag.CurrentStatus == "Pending")">Pending</option>
+					</select>
+				</div>
+				<div class="col-12 col-md-6 col-lg-2">
+					<label for="monthFilter" class="form-label">Month</label>
+					<select class="form-select" id="monthFilter" name="monthFilter">
+						<option value="">All Months</option>
+						@for (int m = 1; m <= 12; m++)
+						{
+							<option value="@m" selected="@(ViewBag.CurrentMonth == m)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)</option>
+						}
+					</select>
+				</div>
+				<div class="col-12 col-md-6 col-lg-2">
+					<label for="yearFilter" class="form-label">Year</label>
+					<select class="form-select" id="yearFilter" name="yearFilter">
+						<option value="">All Years</option>
+						@for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 2; y--)
+						{
+							<option value="@y" selected="@(ViewBag.CurrentYear == y)">@y</option>
+						}
+					</select>
+				</div>
+				<div class="col-12 col-md-6 col-lg-3 d-flex align-items-end">
+					<div class="d-flex gap-2 w-100">
+						<button type="submit" class="btn btn-primary flex-grow-1">
+							<i class="fas fa-filter me-2"></i>Filter
+						</button>
+						<a href="@Url.Action("Index")" class="btn btn-outline flex-grow-1">
+							<i class="fas fa-redo me-2"></i>Reset
+						</a>
+					</div>
+				</div>
+			</form>
+
+			<div class="table-responsive">
+				<table class="table table-hover align-middle">
+					<thead class="table-light">
+						<tr>
+							<th>Employee</th>
+							<th>Pay Period</th>
+							<th class="text-right">Basic Salary</th>
+							<th class="text-right">Allowance</th>
+							<th class="text-right">Deductions</th>
+							<th class="text-right">Net Pay</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var p in Model)
+						{
+							<tr>
+								<td>@($"{p.Employee?.FirstName} {p.Employee?.LastName}")</td>
+								<td>
+									@if (p.PayPeriod.HasValue)
+									{
+										var day = p.PayPeriod.Value.Day;
+										var period = day <= 15 ? "1st Half" : "2nd Half";
+										@($"{p.PayPeriod.Value.ToString("MMMM yyyy")} ({period})")
+									}
+								</td>
+								<td class="text-right">₱@String.Format("{0:N2}", p.SalaryGrade?.BasicSalary ?? 0)</td>
+								<td class="text-right">₱@String.Format("{0:N2}", p.SalaryGrade?.Allowances ?? 0)</td>
+								<td class="text-right">₱@String.Format("{0:N2}", (p.Deductions_SSS ?? 0) + (p.Deductions_PhilHealth ?? 0) + (p.Deductions_PagIbig ?? 0) + (p.Absences ?? 0) + (p.TaxWithHolding ?? 0))</td>
+								<td class="text-right">₱@String.Format("{0:N2}", (p?.NetSalary ?? 0) < 0 ? 0 : (p?.NetSalary ?? 0))</td>
+								<td>
+									<span class="badge @(p?.PayrollStatus == "Processed" ? "bg-success" : "bg-warning text-dark")">
+										@p?.PayrollStatus
+									</span>
+								</td>
+								<td>
+									<div class="d-flex flex-wrap gap-2">
+										<a href="@Url.Action("Payslip", "Payroll", new { id = p.PayrollID })" class="icon-action-btn view" title="View Payslip">
+											<i class="fas fa-file-alt"></i>
+										</a>
+										<a href="@Url.Action("ReimbursePayroll", "Payroll", new { id = p.PayrollID })" class="icon-action-btn approve" title="Reimburse" onclick="return confirm('Are you sure you want to reimburse this payroll?');">
+											<i class="fas fa-money-bill-wave"></i>
+										</a>
+										<a href="@Url.Action("SendEmail", "Payroll", new { id = p.PayrollID })" class="icon-action-btn edit" title="Send Email">
+											<i class="fas fa-envelope"></i>
+										</a>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Pagination -->
+			<div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+				<form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+					<input type="hidden" name="searchString" value="@ViewBag.CurrentSearch" />
+					<input type="hidden" name="statusFilter" value="@ViewBag.CurrentStatus" />
+					<input type="hidden" name="monthFilter" value="@ViewBag.CurrentMonth" />
+					<input type="hidden" name="yearFilter" value="@ViewBag.CurrentYear" />
+
+					<label for="pageInput" class="form-label mb-0">Page:</label>
+					<input type="number"
+						   name="page"
+						   id="pageInput"
+						   min="1"
+						   max="@ViewBag.TotalPages"
+						   value="@ViewBag.CurrentPage"
+						   class="form-control"
+						   style="width: 80px;"
+						   onchange="this.form.submit()" />
+					<span class="text-muted">of @ViewBag.TotalPages</span>
+				</form>
+
+				<div class="d-flex gap-2">
+					<a asp-action="Index"
+					   asp-route-page="@(ViewBag.CurrentPage - 1)"
+					   asp-route-searchString="@ViewBag.CurrentSearch"
+					   asp-route-statusFilter="@ViewBag.CurrentStatus"
+					   asp-route-monthFilter="@ViewBag.CurrentMonth"
+					   asp-route-yearFilter="@ViewBag.CurrentYear"
+					   class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+						<i class="fas fa-chevron-left me-1"></i>Prev
+					</a>
+
+					<a asp-action="Index"
+					   asp-route-page="@(ViewBag.CurrentPage + 1)"
+					   asp-route-searchString="@ViewBag.CurrentSearch"
+					   asp-route-statusFilter="@ViewBag.CurrentStatus"
+					   asp-route-monthFilter="@ViewBag.CurrentMonth"
+					   asp-route-yearFilter="@ViewBag.CurrentYear"
+					   class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+						Next<i class="fas fa-chevron-right ms-1"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+
+

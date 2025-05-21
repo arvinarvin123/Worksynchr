@@ -1,0 +1,1118 @@
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #79ADDC;
+    --bs-btn-border-color: #79ADDC;
+    --bs-btn-hover-color: #79ADDC;
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-border-color: #79ADDC;
+    --bs-btn-focus-shadow-rgb: 33, 37, 41;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #79ADDC;
+    --bs-btn-active-border-color: #79ADDC;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #79ADDC;
+    --bs-btn-disabled-border-color: #79ADDC;
+    transition: all 0.3s ease;
+}
+
+.bg-success {
+    --bs-bg-opacity: 1;
+    background-color: #33595E !important;
+}
+
+.bg-warning {
+    --bs-bg-opacity: 1;
+    --bs-badge-color: black;
+    background-color: #FDF1DD !important;
+}
+
+
+.bg-danger {
+    --bs-bg-opacity: 1;
+    background-color: #A93F55 !important;
+}
+
+.ms-3 {
+    margin-right: 1rem !important;
+    margin-left: 1rem !important;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-right: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+}
+
+
+.btn-dark {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #79ADDC;
+    --bs-btn-border-color: #79ADDC;
+    --bs-btn-hover-color: #79ADDC;
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-border-color: #79ADDC;
+    --bs-btn-focus-shadow-rgb: 128, 199, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #79ADDC;
+    --bs-btn-active-border-color: #79ADDC;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(128, 199, 253, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #79ADDC;
+    --bs-btn-disabled-border-color: #79ADDC;
+}
+
+
+
+
+.btn-outline-successs {
+    color: #fff;
+    background-color: #33595E;
+    border-color: #33595E;
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #33595E;
+    --bs-btn-border-color: #33595E;
+    --bs-btn-hover-color: #33595E;
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: #33595E;
+    --bs-btn-focus-shadow-rgb: 25, 135, 84;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #33595E;
+    --bs-btn-active-border-color: #33595E;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #33595E;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #33595E;
+    --bs-gradient: none;
+    transition: all 0.3s;
+}
+.btn-outline-successs:hover, .btn-outline-successs:focus {
+    color: #33595E;
+    background-color: transparent;
+    border-color: #33595E;
+}
+
+.btn-outline-dangerr {
+    color: #fff;
+    background-color: #A93F55;
+    border-color: #A93F55;
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #A93F55;
+    --bs-btn-border-color: #A93F55;
+    --bs-btn-hover-color: #A93F55;
+    --bs-btn-hover-bg: transparent;
+    --bs-btn-hover-border-color: #A93F55;
+    --bs-btn-focus-shadow-rgb: 220, 53, 69;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #A93F55;
+    --bs-btn-active-border-color: #A93F55;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #A93F55;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #A93F55;
+    --bs-gradient: none;
+    transition: all 0.3s;
+}
+.btn-outline-dangerr:hover, .btn-outline-dangerr:focus {
+    color: #A93F55;
+    background-color: transparent;
+    border-color: #A93F55;
+}
+
+/* Card Layout */
+.employee-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+body.employee-page {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+
+
+/* Page Background */
+body.attendance-page {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+/* Card Layout */
+.attendance-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 0.95rem;
+    color: #6b7280;
+}
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+.breadcrumb-separator {
+    margin: 0 0.25rem;
+}
+
+/* Buttons */
+.btn-main {
+    background-color: #79ADDC;
+    color: white;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    border: none;
+}
+
+    .btn-main:hover {
+        background-color: white;
+        color: #79ADDC;
+        border: 1px solid #79ADDC;
+    }
+
+.filter-btn {
+    border: 1px solid #d1d5db;
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+    color: #374151;
+}
+
+/* Search Input */
+.search-box {
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.75rem;
+}
+
+/* Table */
+.table th, .table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Profile Image in Table */
+.profile-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* Pagination Layout */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* === Leave Request Page Styles === */
+
+body.leave-page {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.leave-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+/* Buttons */
+.btn-approve {
+    background-color: #33595E;
+    color: white;
+    border: 1px solid #33595E;
+    transition: all 0.3s ease;
+}
+
+    .btn-approve:hover {
+        background-color: white;
+        color: #33595E;
+        border: 1px solid #33595E;
+    }
+
+.btn-reject {
+    background-color: #A93F55;
+    color: white;
+    border: 1px solid #A93F55;
+    transition: all 0.3s ease;
+}
+
+    .btn-reject:hover {
+        background-color: white;
+        color: #A93F55;
+        border: 1px solid #A93F55;
+    }
+
+.btn-view {
+    background-color: #FDF1DD;
+    color: black;
+    border: 1px solid #212529;
+    transition: all 0.3s ease;
+}
+
+    .btn-view:hover {
+        background-color: #212529;
+        color: #FDF1DD;
+        border: 1px solid #212529;
+    }
+
+
+/* Filter Tabs */
+.filter-tabs .btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+    .filter-tabs .btn.active {
+        background-color: #e0e7ff;
+        color: #4338ca;
+    }
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 0.95rem;
+    color: #6b7280;
+}
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+.breadcrumb-separator {
+    margin: 0 0.25rem;
+}
+
+/* === Apply for Leave Page Styles === */
+
+body.apply-leave-page {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.apply-leave-page .leave-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    max-width: 720px;
+    margin: auto;
+}
+
+/* Reuse breadcrumb styles already defined */
+
+/* Form Labels */
+.apply-leave-page label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Inputs and Selects */
+.apply-leave-page .form-control,
+.apply-leave-page .form-select {
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* Submit Button */
+.apply-leave-page .btn-submit {
+    background-color: #212529;
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.5rem;
+}
+
+    .apply-leave-page .btn-submit:hover {
+        background-color: white;
+        color: #212529;
+        border: 1px solid #212529;
+    }
+
+
+/* Daily Attendance Page Styles */
+body.daily-attendance {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+.daily-attendance .card {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.daily-attendance .breadcrumb {
+    font-size: 0.95rem;
+    color: #6b7280;
+}
+
+    .daily-attendance .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+        .daily-attendance .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+.daily-attendance .breadcrumb-separator {
+    margin: 0 0.25rem;
+}
+
+.daily-attendance .btn-main {
+    background-color: #79ADDC;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    border: none;
+    margin-left: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+    .daily-attendance .btn-main:hover {
+        background-color: white;
+        color: #79ADDC;
+        border: 1px solid #79ADDC;
+    }
+
+
+.daily-attendance .filter-btn {
+    border: 1px solid #d1d5db;
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+    color: #374151;
+}
+
+.daily-attendance .search-box {
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.75rem;
+}
+
+.daily-attendance .table th, .daily-attendance .table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.daily-attendance .profile-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.daily-attendance .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Attendance Report Page Styles */
+body.attendance-report {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+/* Card Layout */
+.card {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 0.95rem;
+    color: #6b7280;
+}
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+.breadcrumb-separator {
+    margin: 0 0.25rem;
+}
+
+/* Buttons */
+.btn-main {
+    background-color: #79ADDC;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    border: none;
+    margin-left: 0.5rem;
+}
+
+    .btn-main:hover {
+        background-color: white;
+        color: #79ADDC;
+        border: 1px solid #79ADDC;
+    }
+
+/* Filter Labels */
+.filter-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    color: #4b5563;
+}
+
+.filter-group {
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Search Input */
+.search-box {
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.75rem;
+}
+
+/* Table */
+.table th, .table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Profile Image in Table */
+.profile-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* User Roles Page Styles */
+body.user-roles {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+/* Card Layout */
+.card {
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+.breadcrumb-separator {
+    margin: 0 0.25rem;
+}
+
+/* Buttons */
+.btn-main {
+    background-color: #79ADDC;
+    color: white;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    border: none;
+}
+
+    .btn-main:hover {
+        background-color: white;
+        color: #79ADDC;
+        border: 1px solid #79ADDC;
+    }
+
+.btn-outline {
+    border: 1px solid #d1d5db;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    background-color: white;
+    margin-left: 0.5rem;
+}
+
+    .btn-outline:hover {
+        background-color: #f3f4f6;
+    }
+
+/* Form Controls */
+.form-select, .form-control {
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
+}
+
+/* Table */
+.table td, .table th {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Avatar Image */
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* Action Buttons */
+.action-btn {
+    background-color: #f3f4f6;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-size: 0.8rem;
+    margin-right: 0.3rem;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+/* Audit Logs Page Styles */
+body.audit-logs {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+}
+
+/* Card Layout */
+.card {
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+.breadcrumb-separator {
+    margin: 0 0.25rem;
+}
+
+/* Buttons */
+.btn-outline {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    background-color: white;
+    margin-right: 0.5rem;
+}
+
+    .btn-outline:hover {
+        background-color: #f3f4f6;
+    }
+
+/* Form Controls */
+.form-select, .form-control {
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
+}
+
+/* Table */
+.table td, .table th {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Avatar Image */
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+
+.logoutButton {
+    --figure-duration: 100ms;
+    --transform-figure: none;
+    --walking-duration: 100ms;
+    --transform-arm1: none;
+    --transform-wrist1: none;
+    --transform-arm2: none;
+    --transform-wrist2: none;
+    --transform-leg1: none;
+    --transform-calf1: none;
+    --transform-leg2: none;
+    --transform-calf2: none;
+    background: none;
+    border: 0;
+    color: #f4f7ff;
+    cursor: pointer;
+    display: block;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    height: 40px;
+    outline: none;
+    padding: 0 0 0 20px;
+    perspective: 100px;
+    position: relative;
+    text-align: left;
+    width: 130px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+    .logoutButton::before {
+        background-color: #00091F;
+        border-radius: 5px;
+        content: '';
+        display: block;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        transform: none;
+        transition: transform 50ms ease;
+        width: 100%;
+        z-index: 2;
+    }
+
+    .logoutButton:hover .door {
+        transform: rotateY(20deg);
+    }
+
+    .logoutButton:active::before {
+        transform: scale(.96);
+    }
+
+    .logoutButton:active .door {
+        transform: rotateY(28deg);
+    }
+
+    .logoutButton.clicked::before {
+        transform: none;
+    }
+
+    .logoutButton.clicked .door {
+        transform: rotateY(35deg);
+    }
+
+    .logoutButton.door-slammed .door {
+        transform: none;
+        transition: transform 100ms ease-in 250ms;
+    }
+
+    .logoutButton.falling {
+        animation: shake 200ms linear;
+    }
+
+        .logoutButton.falling .bang {
+            animation: flash 300ms linear;
+        }
+
+        .logoutButton.falling .figure {
+            animation: spin 1000ms infinite linear;
+            bottom: -1080px;
+            opacity: 0;
+            right: 1px;
+            transition: transform calc(var(--figure-duration) * 1ms) linear, bottom calc(var(--figure-duration) * 1ms) cubic-bezier(0.7, 0.1, 1, 1) 100ms, opacity calc(var(--figure-duration) * 0.25ms) linear calc(var(--figure-duration) * 0.75ms);
+            z-index: 1;
+        }
+
+.logoutButton--light::before {
+    background-color: #f4f7ff;
+}
+
+.logoutButton--light .button-text {
+    color: #1f2335;
+}
+
+.logoutButton--light .door, .logoutButton--light .doorway {
+    fill: #1f2335;
+}
+
+.button-text {
+    color: #F4F7FF;
+    font-weight: 500;
+    position: relative;
+    z-index: 10;
+}
+
+svg {
+    display: block;
+    position: absolute;
+}
+
+.figure {
+    bottom: 5px;
+    fill: #4371f7;
+    right: 18px;
+    transform: var(--transform-figure);
+    transition: transform calc(var(--figure-duration) * 1ms) cubic-bezier(0.2, 0.1, 0.80, 0.9);
+    width: 30px;
+    z-index: 4;
+}
+
+.door, .doorway {
+    bottom: 4px;
+    fill: #f4f7ff;
+    right: 12px;
+    width: 32px;
+}
+
+.door {
+    transform: rotateY(20deg);
+    transform-origin: 100% 50%;
+    transform-style: preserve-3d;
+    transition: transform 200ms ease;
+    z-index: 5;
+}
+
+    .door path {
+        fill: #4371f7;
+        stroke: #4371f7;
+        stroke-width: 4;
+    }
+
+.doorway {
+    z-index: 3;
+}
+
+.bang {
+    opacity: 0;
+}
+
+.arm1, .wrist1, .arm2, .wrist2, .leg1, .calf1, .leg2, .calf2 {
+    transition: transform calc(var(--walking-duration) * 1ms) ease-in-out;
+}
+
+.arm1 {
+    transform: var(--transform-arm1);
+    transform-origin: 52% 45%;
+}
+
+.wrist1 {
+    transform: var(--transform-wrist1);
+    transform-origin: 59% 55%;
+}
+
+.arm2 {
+    transform: var(--transform-arm2);
+    transform-origin: 47% 43%;
+}
+
+.wrist2 {
+    transform: var(--transform-wrist2);
+    transform-origin: 35% 47%;
+}
+
+.leg1 {
+    transform: var(--transform-leg1);
+    transform-origin: 47% 64.5%;
+}
+
+.calf1 {
+    transform: var(--transform-calf1);
+    transform-origin: 55.5% 71.5%;
+}
+
+.leg2 {
+    transform: var(--transform-leg2);
+    transform-origin: 43% 63%;
+}
+
+.calf2 {
+    transform: var(--transform-calf2);
+    transform-origin: 41.5% 73%;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg) scale(0.94);
+    }
+
+    to {
+        transform: rotate(359deg) scale(0.94);
+    }
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(-1deg);
+    }
+
+    50% {
+        transform: rotate(2deg);
+    }
+
+    100% {
+        transform: rotate(-1deg);
+    }
+}
+
+@keyframes flash {
+    0% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+
+
+.page_404 {
+    padding: 40px 0;
+    background: #fff;
+    font-family: 'Arvo', serif;
+}
+
+    .page_404 img {
+        width: 100%;
+    }
+
+.four_zero_four_bg {
+    background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+    height: 400px;
+    background-position: center;
+}
+
+
+    .four_zero_four_bg h1 {
+        font-size: 80px;
+    }
+
+    .four_zero_four_bg h3 {
+        font-size: 80px;
+    }
+
+.link_404 {
+    color: #fff !important;
+    padding: 10px 20px;
+    background: #33595E;
+    margin: 20px 0;
+    display: inline-block;
+}
+
+.contant_box_404 {
+    margin-top: -50px;
+}
+
+/* Icon Action Buttons */
+.icon-action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    background-color: white;
+    color: #374151;
+    transition: all 0.2s ease;
+    margin-right: 0.3rem;
+}
+
+.icon-action-btn:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.icon-action-btn i {
+    font-size: 0.9rem;
+}
+
+.icon-action-btn.edit {
+    border-color: #33595E;
+    color: #33595E;
+}
+
+.icon-action-btn.edit:hover {
+    background-color: #33595E;
+    color: white;
+}
+
+.icon-action-btn.view {
+    border-color: #4B5563;
+    color: #4B5563;
+}
+
+.icon-action-btn.view:hover {
+    background-color: #4B5563;
+    color: white;
+}
+
+.icon-action-btn.delete {
+    border-color: #A93F55;
+    color: #A93F55;
+}
+
+.icon-action-btn.delete:hover {
+    background-color: #A93F55;
+    color: white;
+}
+
+.icon-action-btn.approve {
+    border-color: #059669;
+    color: #059669;
+}
+
+.icon-action-btn.approve:hover {
+    background-color: #059669;
+    color: white;
+}
+
+.icon-action-btn.reject {
+    border-color: #DC2626;
+    color: #DC2626;
+}
+
+.icon-action-btn.reject:hover {
+    background-color: #DC2626;
+    color: white;
+}
+
+/* Right-align for numbers */
+.text-right {
+    text-align: right !important;
+}
+
+/* Employee name highlight */
+.employee-name {
+    font-weight: bold;
+    font-size: 1.05em;
+    letter-spacing: 0.01em;
+}
+
+/* Dashboard Card Enhancements */
+.dashboard-card {
+    border: none;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+    position: relative;
+    overflow: hidden;
+    padding-top: 0.5rem;
+    background: #fff;
+    min-height: 210px;
+}
+.dashboard-card-leave {
+    border-left: 6px solid #79ADDC;
+}
+.dashboard-card-payroll {
+    border-left: 6px solid #33595E;
+}
+.dashboard-card-attendance {
+    border-left: 6px solid #F7B801;
+}
+.dashboard-card-overtime {
+    border-left: 6px solid #A259E6;
+}
+.dashboard-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.bg-purple {
+    background-color: #A259E6 !important;
+    color: #fff !important;
+}
+
+@media (max-width: 767px) {
+    .dashboard-card {
+        min-height: 0;
+        margin-bottom: 1rem;
+    }
+}
+
+
+
+

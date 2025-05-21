@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Apply for Leave";
+    ViewData["BodyClass"] = "apply-leave-page";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb mb-2">
+        <a href="#">Leave</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="#">Leave Requests</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="text-dark">Apply for Leave</span>
+    </nav>
+
+    <!-- Title -->
+    <div class="mb-4">
+        <h3 class="fw-semibold">Apply for Leave</h3>
+    </div>
+
+    <!-- Leave Form Card -->
+    <div class="leave-card">
+        <form asp-action="ApplyLeave" method="post">
+            @Html.AntiForgeryToken()
+            
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">@TempData["Error"]</div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label">Leave Type</label>
+                <select class="form-select" name="LeaveType" required>
+                    <option selected disabled>Select Leave Type</option>
+                    <option>Sick Leave</option>
+                    <option>Vacation Leave</option>
+                    <option>Maternity Leave</option>
+                    <option>Emergency Leave</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Date Range</label>
+                <input type="date" class="form-control mb-2" name="StartDate" required>
+                <input type="date" class="form-control" name="EndDate" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Reason</label>
+                <textarea class="form-control" name="Reason" rows="4" required data-val="true" data-val-noscripts="true" data-val-noscripts-message="Script tags and potentially dangerous HTML are not allowed"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-submit">Submit</button>
+        </form>
+    </div>
+</div>

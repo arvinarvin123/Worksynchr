@@ -1,0 +1,110 @@
+﻿@model HRPayrollSystem.Models.User
+@inject IConfiguration Configuration
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .card {
+            border-radius: 1rem;
+        }
+
+        .captcha-box {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        a {
+            color: #79ADDC;
+            text-decoration: underline;
+        }
+
+        .btn-primary{
+            --bs-btn-color: #fff;
+            --bs-btn-bg: #79ADDC;
+            --bs-btn-border-color: #79ADDC;
+            --bs-btn-hover-color: #79ADDC;
+            --bs-btn-hover-bg: #fff;
+            --bs-btn-hover-border-color: #79ADDC;
+            --bs-btn-focus-shadow-rgb: 33, 37, 41;
+            --bs-btn-active-color: #fff;
+            --bs-btn-active-bg: #79ADDC;
+            --bs-btn-active-border-color: #79ADDC;
+            --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+            --bs-btn-disabled-color: #fff;
+            --bs-btn-disabled-bg: #79ADDC;
+            --bs-btn-disabled-border-color: #79ADDC;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
+            <h3 class="text-center mb-4">Login</h3>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger text-center" role="alert">
+                    @ViewBag.Error
+                </div>
+            }
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success text-center" role="alert">
+                    @TempData["Success"]
+                </div>
+            }
+
+            <form method="post" asp-controller="Auth" asp-action="Login">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                </div>
+
+                <div class="text-center mb-3">
+                    <div class="g-recaptcha d-inline-block" data-sitekey="@Configuration["Recaptcha:SiteKey"]"></div>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        Login
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <a href="@Url.Action("ForgotPassword", "Auth")" class="text-decoration-none">Forgot Password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+﻿@model HRPayrollSystem.Models.Leave
+@{
+    ViewData["Title"] = "Leave Details";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb;
+        color: #111827;
+    }
+
+    .breadcrumb {
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-bottom: 1.25rem;
+    }
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: #6b7280;
+    }
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .form-wrapper {
+        max-width: 1000px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 1rem;
+        padding: 2rem 2.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.75rem;
+        color: #1f2937;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #374151;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        color: #4b5563;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+        padding: 0.6rem 0.8rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    input[readonly] {
+        background-color: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        border: none;
+        transition: 0.3s ease;
+    }
+
+    .btn-secondary {
+        background-color: #e5e7eb;
+        color: #1f2937;
+    }
+
+    .btn-secondary:hover {
+        background-color: #d1d5db;
+    }
+
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-approved {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .status-rejected {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .reason-box {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<main class="p-4 flex-grow-1 bg-light">
+    <div class="container-fluid px-4 py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Leave")">Leave Requests</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Leave Details</li>
+            </ol>
+        </nav>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-semibold">Leave Request Details</h3>
+        </div>
+
+        <div class="form-wrapper">
+            <h2>📝 Leave Request Information</h2>
+
+            <!-- Employee Information -->
+            <div class="section-title">Employee Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Employee Name</label>
+                    <input type="text" value="@($"{Model.Employee?.FirstName} {Model.Employee?.LastName}")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Employee ID</label>
+                    <input type="text" value="@Model.EmployeeID" readonly />
+                </div>
+            </div>
+
+            <!-- Leave Information -->
+            <div class="section-title">Leave Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Leave Type</label>
+                    <input type="text" value="@Model.LeaveType" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <div>
+                        <span class="status-badge @($"status-{Model.ApprovalStatus?.ToLower()}")">
+                            @Model.ApprovalStatus
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="text" value="@Model.StartDate.ToString("MM/dd/yyyy")" readonly />
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="text" value="@Model.EndDate.ToString("MM/dd/yyyy")" readonly />
+                </div>
+            </div>
+
+            <!-- Reason -->
+            <div class="section-title">Reason for Leave</div>
+            <div class="form-group">
+                <div class="reason-box">
+                    @Model.Reason
+                </div>
+            </div>
+
+            <!-- Approval Information -->
+            @if (Model.ApprovalStatus != "Pending")
+            {
+                <div class="section-title">Approval Information</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Approved By</label>
+                        <input type="text" value="@($"{Model.HR_Approver?.FirstName} {Model.HR_Approver?.LastName}")" readonly />
+                    </div>
+                </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="button-row">
+                <a href="@Url.Action("Index", "Leave")" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back
+                </a>
+            </div>
+        </div>
+    </div>
+</main>

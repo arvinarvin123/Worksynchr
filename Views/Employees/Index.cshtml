@@ -1,0 +1,118 @@
+﻿@model IEnumerable<HRPayrollSystem.Models.Employee>
+
+
+@{
+    ViewData["Title"] = "Manage Employee";
+    ViewData["BodyClass"] = "employee-page";
+}
+<main class="p-4 flex-grow-1 bg-light">
+<div class="container-fluid px-4 py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Employees</li>
+        </ol>
+    </nav>
+
+
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">All Employees</h3>
+        <div>
+            <a href="@Url.Action("Create", "Employees")" class="btn btn-dark me-2">
+                <i class="bi bi-person-plus"></i> Add Employee
+            </a>
+        </div>
+    </div>
+
+ 
+
+    <!-- Employee Table -->
+    <div class="employee-card">
+        <!-- Search Input -->
+        <form method="get" action="@Url.Action("Index", "Employees")">
+            <div class="input-group mb-3">
+                <input type="text" name="search" class="form-control" placeholder="Search by Name or Department" value="@ViewBag.SearchQuery">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+        <div class="card-body">
+            <h5 class="card-title fw-bold">Employee List</h5>
+            <div class="table-responsive">
+                <table class="table table-borderless align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th style="width: 28%;">Name</th>
+                            <th>Department</th>
+                            <th>Hire Date</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var employee in ViewBag.Employees)
+                        {
+                            <tr>
+                                <td>@employee.EmployeeID</td>
+                                <td class="employee-name">@($"{employee.FirstName} {employee.LastName}")</td>
+                                <td>@employee.DepartmentName</td>
+                                <td>@employee.HireDate?.ToString("MM/dd/yyyy")</td>
+                                <td>@employee.PositionTitle</td>
+                                    <td>
+                                        <span class="badge @(employee.EmploymentStatus == "Active" ? "bg-success" : "bg-danger")">
+                                            @employee.EmploymentStatus
+                                        </span>
+                                    </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", "Employees", new { id = employee.EmployeeID })" class="icon-action-btn edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Details", "Employees", new { id = employee.EmployeeID })" class="icon-action-btn view" title="View Details">
+                                        <i class="fas fa-file-alt"></i>
+                                    </a>
+                                    <a href="@Url.Action("Inactive", "Employees", new { id = employee.EmployeeID })" class="icon-action-btn delete" title="Set Inactive" onclick="return confirm('Are you sure?');">
+                                        <i class="fas fa-user-slash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                        <label for="pageInput">Page:</label>
+                        <input type="number"
+                               name="page"
+                               id="pageInput"
+                               min="1"
+                               max="@ViewBag.TotalPages"
+                               value="@ViewBag.CurrentPage"
+                               class="form-control"
+                               style="width: 80px;"
+                               onchange="this.form.submit()" />
+                        <span>of @ViewBag.TotalPages</span>
+                    </form>
+
+                    <div class="d-flex gap-2">
+                        <a asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage <= 1 ? "disabled" : "")">
+                            ‹ Prev
+                        </a>
+
+                        <a asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)"
+                           class="btn btn-outline-secondary btn-sm @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                            Next ›
+                        </a>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+</main>

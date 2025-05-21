@@ -1,0 +1,153 @@
+﻿@{
+	ViewData["Title"] = "My Profile";
+	ViewData["BodyClass"] = "leave-page";
+}
+<main class="p-4 flex-grow-1 bg-light">
+	<div class="container-fluid px-4 py-4">
+
+		<!-- Breadcrumb -->
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+				<li class="breadcrumb-item"><a href="@Url.Action("Index", "Security")">Security & Settings</a></li>
+				<li class="breadcrumb-item active" aria-current="page">My Profile</li>
+			</ol>
+		</nav>
+
+		<!-- Title -->
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h3 class="fw-semibold">My Profile</h3>
+			<a asp-controller="Security" asp-action="EditProfile" class="btn btn-primary"><i class="bi bi-pencil-square me-1"></i> Edit Profile</a>
+		</div>
+
+		<!-- Tabs -->
+		<ul class="nav nav-tabs mb-3" id="profileTabs" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#personal" type="button">Personal Info</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" data-bs-toggle="tab" data-bs-target="#job" type="button">Job Details</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" data-bs-toggle="tab" data-bs-target="#bank" type="button">Paypal & Bank Info</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" data-bs-toggle="tab" data-bs-target="#docs" type="button">Documents</button>
+			</li>
+		</ul>
+
+		<div class="card">
+			<div class="card-body tab-content p-3 bg-white shadow-sm rounded border">
+				<!-- Personal Info -->
+				<div class="tab-pane fade show active" id="personal">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">Full Name</label>
+							<input type="text" class="form-control"
+								   value="@($"{ViewBag.Employee?.FirstName} {ViewBag.Employee?.LastName}")" readonly>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Contact Number</label>
+							<input type="text" class="form-control"
+								   value="@ViewBag.Employee?.ContactNumber" readonly>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Address</label>
+						<textarea class="form-control" rows="2" readonly>@ViewBag.Employee?.Address</textarea>
+					</div>
+				</div>
+
+				<!-- Job Details -->
+				<div class="tab-pane fade" id="job">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">Position</label>
+							<input type="text" class="form-control"
+								   value="@ViewBag.JobDetails?.Position" readonly>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Department</label>
+							<input type="text" class="form-control"
+								   value="@ViewBag.JobDetails?.Department" readonly>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Hire Date</label>
+						<input type="text" class="form-control"
+							   value="@ViewBag.JobDetails?.HireDate" readonly>
+					</div>
+				</div>
+
+				<!-- Bank & Tax Info -->
+				<div class="tab-pane fade" id="bank">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">Paypal Email</label>
+							<input type="text" class="form-control"
+								   value="@ViewBag.BankInfo?.PaypalEmail" readonly>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">TIN</label>
+							<input type="text" class="form-control"
+								   value="@ViewBag.BankInfo?.TIN" readonly>
+						</div>
+					</div>
+				</div>
+
+				<div class="tab-pane fade" id="docs">
+					<form asp-action="UploadDocument" asp-controller="Security" method="post" enctype="multipart/form-data">
+						<div class="mb-3">
+							<label class="form-label">Select Document Type</label>
+							<select name="DocumentType" class="form-select" required>
+								<option value="">-- Select Document --</option>
+								<option value="PagIbig">Pag-IBIG</option>
+								<option value="SSS">SSS</option>
+								<option value="PhilHealth">PhilHealth</option>
+								<option value="BirthCertificate">Birth Certificate</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Choose File</label>
+							<input type="file" name="DocumentFile" class="form-control" required />
+						</div>
+						<button type="submit" class="btn btn-primary">Upload Document</button>
+
+						<hr />
+						<ul class="list-group">
+							@{
+								var emp = ViewBag.Employee;
+								var docs = new List<(string Name, string Path)>
+							{
+							("Pag-IBIG", emp.PagIbigDoc),
+							("SSS", emp.SSSDoc),
+							("PhilHealth", emp.PhilHealthDoc),
+							("Birth Certificate", emp.BirthCertificateDoc)
+							};
+							}
+
+							@foreach (var doc in docs)
+							{
+								var isUploaded = doc.Path != "--";
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									@doc.Name
+									<span class="badge @((isUploaded ? "bg-success" : "bg-danger"))">
+										@(isUploaded ? "Uploaded" : "Not Uploaded")
+									</span>
+								</li>
+							}
+						</ul>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Change Password -->
+		<div class="text-end mt-4">
+			<a asp-controller="Security" asp-action="ChangePassword" class="btn btn-outline-danger">
+				<i class="bi bi-key me-1"></i> Change Password
+			</a>
+		</div>
+
+	</div>
+</main>
