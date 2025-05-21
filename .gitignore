@@ -1,0 +1,26 @@
+# .NET build outputs
+bin/
+obj/
+*.dll
+*.pdb
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Visual Studio files
+.vs/
+*.ncrunchsolution
+*.ncrunchproject
+*.DotSettings
+*.DotSettings.user
+
+# Sensitive files
+appsettings.json
+appsettings.*.json
+!appsettings.Example.json
+
+# Environment files
+*.env
+.env.*
+!.env.example 
