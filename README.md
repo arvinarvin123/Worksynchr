@@ -1,2 +1,2 @@
-# Worksynchr
+# Worksync: HR & Payroll Transactions
 # Worksynchr
